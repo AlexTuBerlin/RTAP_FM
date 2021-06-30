@@ -40,14 +40,25 @@ extern "C" {
  * @var vas_osc::circular_pointer Circular pointer to the delay buffer <br>
  * @var vas_osc::delay_sample The current sample from the delay buffer <br>
  */
+typedef struct vas_osc_adsr
+{
+    float att;
+    float dec;
+    float sus;
+    float rel;
+} vas_osc_adsr;
 
 typedef struct vas_osc
 {
     int tableSize;
+    int tableSizeADSR;
     float currentIndex;
+    float adsrIndex;
     float frequency;
     float amp;
     float *lookupTable;
+    float *lookupTableADSR;
+    vas_osc_adsr adsr;
 
 } vas_osc;
 
@@ -91,7 +102,11 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mod
  */
 void vas_osc_setFrequency(vas_osc *x, float frequency);
 void vas_osc_setAmp(vas_osc *x, float amp);
-
+void vas_osc_noteOn(vas_osc *x, float frequency, float velocity);
+void vas_osc_updateADSR(vas_osc *x, float a, float d, float s , float r);
+float vas_osc_calc_stepSize_Att(int tableSize, float attVal, float sumVal);
+float vas_osc_calc_stepSize_Dec(int tableSize, float decVal, float sumVal, float susVal);
+float vas_osc_calc_stepSize_Rel(int tableSize, float relVal, float sumVal, float susVal);
     
 #ifdef __cplusplus
 }

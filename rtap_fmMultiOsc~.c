@@ -168,6 +168,16 @@ void rtap_fmMultiOsc_tilde_setAmp_osc2(rtap_fmMultiOsc_tilde *x, float amp)
     vas_osc_setAmp(x->osc2, amp);
 }
 
+void rtap_fmMultiOsc_tilde_setADSR_osc1(rtap_fmMultiOsc_tilde *x, float a, float d, float s, float r)
+{
+    vas_osc_updateADSR(x->osc1, a,d,s,r);
+}
+
+void rtap_fmMultiOsc_tilde_setADSR_osc2(rtap_fmMultiOsc_tilde *x, float a, float d, float s, float r)
+{
+    vas_osc_updateADSR(x->osc2, a,d,s,r);
+}
+
 
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 {
@@ -216,7 +226,8 @@ void rtap_fmMultiOsc_tilde_setup(void)
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setExternTable_osc2, gensym("table_osc2"), A_SYMBOL, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setAmp_osc1, gensym("amp_osc1"), A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setAmp_osc2, gensym("amp_osc2"), A_DEFFLOAT, 0);
-     // class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSRTable, gensym("setCarryADSR"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR_osc1, gensym("adsr_osc1"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR_osc2, gensym("adsr_osc2"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
 
       CLASS_MAINSIGNALIN(rtap_fmMultiOsc_tilde_class, rtap_fmMultiOsc_tilde, f);
 }
