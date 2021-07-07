@@ -14,6 +14,7 @@ lib.name = rtap_fmMultiOsc~
 class.sources = rtap_fmMultiOsc~.c
 rtap_fmMultiOsc~.class.sources += vas_mem.c
 rtap_fmMultiOsc~.class.sources += vas_osc.c
+rtap_fmMultiOsc~.class.sources += vas_adsr.c
 
 
 # include Makefile.pdlibbuilder from submodule directory 'pd-lib-builder'
