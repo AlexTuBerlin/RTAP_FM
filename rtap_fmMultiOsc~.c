@@ -191,9 +191,9 @@ void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, f
 {
     switch ((int)id){
         case ADSR1_ID :
-            vas_adsr_updateADSR(x->adsr1, a,d,s,r);
+            vas_adsr_setADSR_values(x->adsr1, a,d,s,r);
         case ADSR2_ID :
-            vas_adsr_updateADSR(x->adsr2, a,d,s,r);
+            vas_adsr_setADSR_values(x->adsr2, a,d,s,r);
     }
 }
 

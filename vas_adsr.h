@@ -22,6 +22,18 @@
 #define MODE_LFO 0
 #define MODE_TRIGGER 1 
 
+#define STAGE_ATTACK 0 
+#define STAGE_DECAY 1
+#define STAGE_SUSTAIN 2
+#define STAGE_RELEASE 3
+
+#define SCALE_ATTACK 10
+#define SCALE_DECAY 10
+#define SCALE_SUSTAIN 10
+#define SCALE_RELEASE 10
+
+#define ADSR_MAX 100.0F
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,8 +53,9 @@ extern "C" {
 typedef struct vas_adsr
 {
     int tableSize;
-    float index;
-    float *lookupTable;
+    float *lookupTable_attack;
+    float *lookupTable_decay;
+    float *lookupTable_release;
     float currentIndex;
 
     float att_t;
@@ -54,6 +67,8 @@ typedef struct vas_adsr
     float att_q;
     float dec_q;
     float rel_q;
+
+    int currentStage;
 
 } vas_adsr;
 
@@ -95,10 +110,14 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size, int m
  * Sets the delay time in samples with floating point precision. <br>
  * Delays exceeding the buffer size are handeled by setting the delay to zero. <br>
  */
-void vas_adsr_updateADSR(vas_adsr *x, float a, float d, float s , float r);
-float vas_adsr_func_attack_normalized(float x,float q);
-float vas_adsr_func_decay_normalized(float x,float q,float s);
-float vas_adsr_func_release_normalized(float x,float q,float s);
+float vas_adsr_get_stepSize(vas_adsr *x);
+void vas_adsr_next_stage(vas_adsr *x);
+void vas_adsr_updateADSR(vas_adsr *x);
+float vas_adsr_get_current_value(vas_adsr *x);
+void vas_adsr_updateADSR(vas_adsr *x);
+float vas_adsr_func_slope_up(float x,float q);
+float vas_adsr_func_slope_down(float x,float q);
+void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r);
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 #ifdef __cplusplus
 }
