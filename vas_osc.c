@@ -76,9 +76,6 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
 
         if(x->currentIndex >= x->tableSize)
          x->currentIndex -= x->tableSize;
-
-        if(x->adsrIndex >= x->tableSizeADSR)
-         x->adsrIndex -= x->tableSizeADSR;
     }
 }
 

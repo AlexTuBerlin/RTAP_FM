@@ -61,15 +61,12 @@ float vas_adsr_get_stepSize(vas_adsr *x)
     if(x->currentStage == STAGE_ATTACK){
         return (ADSR_MAX - x->att_t)/SCALE_ATTACK;
     }  
-
     else if(x->currentStage == STAGE_DECAY){
         return (ADSR_MAX - x->dec_t)/SCALE_DECAY;
     }
-
     else if(x->currentStage == STAGE_SUSTAIN){
         return x->sus_t;
     }   
-
     else if(x->currentStage == STAGE_RELEASE){
         return (ADSR_MAX - x->rel_t)/STAGE_RELEASE;
     }  
@@ -108,12 +105,11 @@ float vas_adsr_get_current_value(vas_adsr *x)
     }
     else if(x->currentStage == STAGE_SUSTAIN){
         return sustain;
-    }   
+    }
     else if(x->currentStage == STAGE_RELEASE){
         return x->lookupTable_release[intIndex] * sustain;
     }  
-    else return 0;
-        
+    else return 0; 
 }
 
 float vas_adsr_func_slope_up(float x,float q)
@@ -142,7 +138,8 @@ void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r)
     if(r>0 && r!=x->rel_t){x->rel_t = r;}
 }
 
-void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr){
+void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr)
+{
     if(qa>0){x->att_q = qa;}
     if(qd>0){x->dec_q = qd;}
     if(qr>0){x->rel_q = qr;}
