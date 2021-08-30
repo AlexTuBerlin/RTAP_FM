@@ -22,8 +22,8 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->rel_t = 0.5;
 
     x->sus_v = 0.5;
-    
-    x->currentStage = STAGE_RELEASE;
+    x->resultvolume = 0.0F;
+    x->currentStage = STAGE_SILENT;
 
     vas_adsr_updateADSR(x); //initTables
     return x;
@@ -37,6 +37,19 @@ void vas_adsr_free(vas_adsr *x)
     free(x);
 }
 
+void vas_adsr_noteOn(vas_adsr *x, float velocity)
+{
+    x->currentStage = STAGE_ATTACK;
+    x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
+}
+
+//methode noteOff
+void vas_adsr_noteOff(vas_adsr *x, float velocity)
+{
+   x->currentStage = STAGE_RELEASE;
+}
+
+//process methode läuft in loop
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize, int mode)
 {
     int i = vectorSize;
@@ -44,18 +57,27 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize, int mo
     
     while(i--)
     {
+        //currentvalue y-achse zwischen 0 und 1
         currentValue = vas_adsr_get_current_value(x);
         currentValue *= *in++;
-        x->currentIndex += vas_adsr_get_stepSize(x);
+
+         //currentIndex x-Achse zwischen 0 und tablesize (44100) 
+        if(x->currentStage != STAGE_SILENT || x->currentStage != STAGE_SUSTAIN){
+             x->currentIndex += vas_adsr_get_stepSize(x);
+        } 
         *out++ = currentValue;
 
         if(x->currentIndex >= x->tableSize){
             x->currentIndex -= x->tableSize;
-            vas_adsr_next_stage(x);
+
+           if(x->currentStage != STAGE_SUSTAIN) {
+               vas_adsr_next_stage(x);
+           }
         }
 
     }
 }
+
 float vas_adsr_get_stepSize(vas_adsr *x)
 {
     if(x->currentStage == STAGE_ATTACK){
@@ -71,15 +93,19 @@ float vas_adsr_get_stepSize(vas_adsr *x)
     }   
 
     else if(x->currentStage == STAGE_RELEASE){
-        return (ADSR_MAX - x->rel_t)/STAGE_RELEASE;
+        return (ADSR_MAX - x->rel_t)/SCALE_RELEASE;
     }  
     else {return 1;}
 }
 
+//loop oder sustain einstellen , neuer Input für Modus (neue Variable)
+//#define MODE_LFO 0 #define MODE_TRIGGER 1 
 void vas_adsr_next_stage(vas_adsr *x)
 {
-    x->currentStage++;
-    if(x->currentStage>3){x->currentStage=0;}
+    if(x->currentStage != STAGE_SILENT){
+        x->currentStage++;
+    } 
+
 }
 
 void vas_adsr_updateADSR(vas_adsr *x)
@@ -95,7 +121,7 @@ void vas_adsr_updateADSR(vas_adsr *x)
 
 float vas_adsr_get_current_value(vas_adsr *x)
 {
-    float sustain = x->sus_v;
+    float sustain = x->resultvolume;
     float decayQuality = x->dec_q;
     float x_normalized = x->currentIndex/(float)x->tableSize;
     int intIndex = floor(x->currentIndex);
@@ -111,7 +137,10 @@ float vas_adsr_get_current_value(vas_adsr *x)
     }   
     else if(x->currentStage == STAGE_RELEASE){
         return x->lookupTable_release[intIndex] * sustain;
-    }  
+    }
+     else if(x->currentStage == STAGE_SILENT){
+        return 0;
+    }    
     else return 0;
         
 }

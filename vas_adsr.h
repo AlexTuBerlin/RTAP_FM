@@ -26,6 +26,7 @@
 #define STAGE_DECAY 1
 #define STAGE_SUSTAIN 2
 #define STAGE_RELEASE 3
+#define STAGE_SILENT 4
 
 #define SCALE_ATTACK 10
 #define SCALE_DECAY 10
@@ -33,6 +34,8 @@
 #define SCALE_RELEASE 10
 
 #define ADSR_MAX 100.0F
+#define VELOCITY_MAX 128.0F
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,6 +70,8 @@ typedef struct vas_adsr
     float att_q;
     float dec_q;
     float rel_q;
+    float resultvolume;
+
 
     int currentStage;
 
@@ -119,6 +124,11 @@ float vas_adsr_func_slope_up(float x,float q);
 float vas_adsr_func_slope_down(float x,float q);
 void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r);
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
+
+//hinzufügen der neuen Funktionen zum Header
+void vas_adsr_noteOn(vas_adsr *x, float velocity);
+void vas_adsr_noteOff(vas_adsr *x, float velocity);
+
 #ifdef __cplusplus
 }
 #endif

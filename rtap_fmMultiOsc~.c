@@ -72,7 +72,7 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     int n =  (int)(w[4]);
 
     if(x->osc1_active) vas_osc_process(x->osc1, in, out, n, MODE_MOD_NO_INPUT);
-    if(x->adsr1_active) vas_adsr_process(x->adsr1, in, out, n, MODE_LFO);
+    if(x->adsr1_active) vas_adsr_process(x->adsr1, in, out, n, MODE_TRIGGER);
     if(x->osc2_active) vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);
     if(x->adsr2_active) vas_adsr_process(x->adsr2, in, out, n, MODE_LFO);
 
@@ -225,6 +225,17 @@ void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
     }
 }
 
+void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x,float frequency, float velocity)
+{
+    rtap_fmMultiOsc_tilde_osc_setFrequency(x,frequency, OSC2_ID);
+    vas_adsr_noteOn(x->adsr1, velocity);
+    
+}
+
+void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x, float velocity)
+{
+    vas_adsr_noteOff(x->adsr1, velocity);  
+}
 
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 {
@@ -283,6 +294,8 @@ void rtap_fmMultiOsc_tilde_setup(void)
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR_Q, gensym("adsr_Q"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_toggle_active, gensym("I/O"),A_DEFFLOAT, 0);
 
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),A_DEFFLOAT,0); 
 
       CLASS_MAINSIGNALIN(rtap_fmMultiOsc_tilde_class, rtap_fmMultiOsc_tilde, f);
 }

@@ -5,8 +5,8 @@ CC = x86_64-w64-mingw32-gcc
 STRIP = x86_64-w64-mingw32-strip
 
 # setup windows specific variables
-PDINCLUDEDIR = /mnt/c/Program Files/Pd/src
-PDBINDIR = /mnt/c/Program Files/Pd/bin
+PDINCLUDEDIR = /mnt/c/Pd/src
+PDBINDIR = /mnt/c/Pd/bin
 PDLIBDIR = $(shell wslpath $$(cmd.exe /c echo %userprofile%\\Documents\\Pd\\externals 2>/dev/null))
 
 # for a 32 bit system use:
