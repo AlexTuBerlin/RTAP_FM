@@ -49,6 +49,14 @@ void vas_adsr_noteOff(vas_adsr *x, float velocity)
    x->currentStage = STAGE_RELEASE;
 }
 
+//methode wechsel zwischen loop modus und sustain mode
+void vas_adsr_modeswitch(vas_adsr *x, int mode)
+{
+    //
+}
+
+
+
 //process methode läuft in loop
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize, int mode)
 {

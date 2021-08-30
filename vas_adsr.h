@@ -72,7 +72,7 @@ typedef struct vas_adsr
     float rel_q;
     float resultvolume;
 
-
+    int mode;
     int currentStage;
 
 } vas_adsr;
@@ -128,6 +128,7 @@ void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 //hinzufügen der neuen Funktionen zum Header
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
 void vas_adsr_noteOff(vas_adsr *x, float velocity);
+void vas_adsr_modeswitch(vas_adsr *x, int mode);
 
 #ifdef __cplusplus
 }

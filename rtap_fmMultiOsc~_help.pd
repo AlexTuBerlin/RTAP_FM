@@ -5985,7 +5985,7 @@
 #X msg 576 599 adsr_Q \$2 \$3 \$4 \$5;
 #X obj 39 44 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X obj 39 14 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 1 1
+#X obj 39 14 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
 #X obj 125 15 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -6011,6 +6011,7 @@
 #X text 71 14 ADSR 11;
 #X msg 98 476 noteon 400 127;
 #X msg 91 434 noteoff 127;
+#X msg 105 382 adsr_mode 0;
 #X connect 2 0 3 0;
 #X connect 3 0 1 0;
 #X connect 4 0 35 0;
@@ -6081,3 +6082,4 @@
 #X connect 66 0 31 0;
 #X connect 71 0 7 0;
 #X connect 72 0 7 0;
+#X connect 73 0 7 0;
