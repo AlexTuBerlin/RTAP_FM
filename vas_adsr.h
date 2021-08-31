@@ -133,6 +133,7 @@ void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
 void vas_adsr_noteOff(vas_adsr *x);
 void vas_adsr_modeswitch(vas_adsr *x);
+void vas_adsr_set_Silent_time(vas_adsr *x,float st);
 
 #ifdef __cplusplus
 }

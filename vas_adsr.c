@@ -252,6 +252,12 @@ void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r)
     if(r>0 && r!=x->rel_t){x->rel_t = r;}
 }
 
+void vas_adsr_set_Silent_time(vas_adsr *x, float st)
+{
+    if(st>0 && st!=x->silent_time){x->silent_time = st;}
+}
+
+
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr){
     if(qa>0){x->att_q = qa;}
     if(qd>0){x->dec_q = qd;}

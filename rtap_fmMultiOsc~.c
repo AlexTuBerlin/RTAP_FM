@@ -198,6 +198,16 @@ void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, f
     }
 }
 
+void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st, float id)
+{
+    switch ((int)id){
+        case ADSR1_ID :
+            vas_adsr_set_Silent_time(x->adsr1,st);
+        case ADSR2_ID :
+            vas_adsr_set_Silent_time(x->adsr2,st);
+    }
+}
+
 void rtap_fmMultiOsc_tilde_setADSR_Q(rtap_fmMultiOsc_tilde *x, float a, float d, float r, float id)
 {
     switch ((int)id){
@@ -302,7 +312,8 @@ void rtap_fmMultiOsc_tilde_setup(void)
 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),0);
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,0);   
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,0);  
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_set_Silent_time,gensym("silent_time"),A_DEFFLOAT,A_DEFFLOAT,0);  
 
       CLASS_MAINSIGNALIN(rtap_fmMultiOsc_tilde_class, rtap_fmMultiOsc_tilde, f);
 }
