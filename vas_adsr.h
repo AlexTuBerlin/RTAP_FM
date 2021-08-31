@@ -72,8 +72,8 @@ typedef struct vas_adsr
     float rel_q;
     float resultvolume;
 
-    int mode;
     int currentStage;
+    int currentMode;
 
 } vas_adsr;
 
@@ -105,7 +105,7 @@ void vas_adsr_free(vas_adsr *x);
  * The function vas_adsr_perform delays any <br>
  * incoming signal and copies the result to the output vector <br>
  */
-void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size, int mode);
+void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size);
 
 /**
  * @related vas_adsr
@@ -116,7 +116,7 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size, int m
  * Delays exceeding the buffer size are handeled by setting the delay to zero. <br>
  */
 float vas_adsr_get_stepSize(vas_adsr *x);
-void vas_adsr_next_stage(vas_adsr *x);
+void vas_adsr_next_stage(vas_adsr *x,int mode);
 void vas_adsr_updateADSR(vas_adsr *x);
 float vas_adsr_get_current_value(vas_adsr *x);
 void vas_adsr_updateADSR(vas_adsr *x);
@@ -127,8 +127,8 @@ void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 
 //hinzufügen der neuen Funktionen zum Header
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
-void vas_adsr_noteOff(vas_adsr *x, float velocity);
-void vas_adsr_modeswitch(vas_adsr *x, int mode);
+void vas_adsr_noteOff(vas_adsr *x);
+int vas_adsr_modeswitch(int modenew);
 
 #ifdef __cplusplus
 }

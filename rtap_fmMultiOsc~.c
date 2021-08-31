@@ -72,9 +72,10 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     int n =  (int)(w[4]);
 
     if(x->osc1_active) vas_osc_process(x->osc1, in, out, n, MODE_MOD_NO_INPUT);
-    if(x->adsr1_active) vas_adsr_process(x->adsr1, in, out, n, MODE_TRIGGER);
+    if(x->adsr1_active) vas_adsr_process(x->adsr1, in, out, n);
     if(x->osc2_active) vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);
-    if(x->adsr2_active) vas_adsr_process(x->adsr2, in, out, n, MODE_LFO);
+    if(x->adsr2_active) vas_adsr_process(x->adsr2, in, out, n); 
+
 
     /* return a pointer to the dataspace for the next dsp-object */
     return (w+5);
@@ -232,14 +233,14 @@ void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x,float frequency, floa
     
 }
 
-void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x, float velocity)
+void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
 {
-    vas_adsr_noteOff(x->adsr1, velocity);  
+    vas_adsr_noteOff(x->adsr1);  
 }
 
-void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode)
+void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, int mode)
 {
-    //vas_adsr_modeswitch(x->adsr1,mode);
+    vas_adsr_modeswitch(mode);
 }
 
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
@@ -300,7 +301,7 @@ void rtap_fmMultiOsc_tilde_setup(void)
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_toggle_active, gensym("I/O"),A_DEFFLOAT, 0);
 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),A_DEFFLOAT,0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,0);   
 
       CLASS_MAINSIGNALIN(rtap_fmMultiOsc_tilde_class, rtap_fmMultiOsc_tilde, f);

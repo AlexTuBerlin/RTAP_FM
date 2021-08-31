@@ -24,6 +24,7 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->sus_v = 0.5;
     x->resultvolume = 0.0F;
     x->currentStage = STAGE_SILENT;
+    x->currentMode = MODE_TRIGGER;
 
     vas_adsr_updateADSR(x); //initTables
     return x;
@@ -44,21 +45,21 @@ void vas_adsr_noteOn(vas_adsr *x, float velocity)
 }
 
 //methode noteOff
-void vas_adsr_noteOff(vas_adsr *x, float velocity)
+void vas_adsr_noteOff(vas_adsr *x)
 {
    x->currentStage = STAGE_RELEASE;
 }
 
 //methode wechsel zwischen loop modus und sustain mode
-void vas_adsr_modeswitch(vas_adsr *x, int mode)
+int vas_adsr_modeswitch(int modenew)
 {
-    //
+  //  return modenew;
 }
 
 
 
 //process methode läuft in loop
-void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize, int mode)
+void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
 {
     int i = vectorSize;
     float currentValue;
@@ -68,21 +69,40 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize, int mo
         //currentvalue y-achse zwischen 0 und 1
         currentValue = vas_adsr_get_current_value(x);
         currentValue *= *in++;
+        //mode = vas_adsr_modeswitch(mode);
 
-         //currentIndex x-Achse zwischen 0 und tablesize (44100) 
-        if(x->currentStage != STAGE_SILENT || x->currentStage != STAGE_SUSTAIN){
-             x->currentIndex += vas_adsr_get_stepSize(x);
-        } 
-        *out++ = currentValue;
+        switch((int)x->currentMode) {
 
-        if(x->currentIndex >= x->tableSize){
-            x->currentIndex -= x->tableSize;
+	    case MODE_LFO: 
 
-           if(x->currentStage != STAGE_SUSTAIN) {
-               vas_adsr_next_stage(x);
-           }
+            x->currentIndex += vas_adsr_get_stepSize(x);
+            *out++ = currentValue;
+
+             if(x->currentIndex >= x->tableSize){
+                 x->currentIndex -= x->tableSize;
+                vas_adsr_next_stage(x,x->currentMode);
+            }   
+            break;
+
+	    case MODE_TRIGGER:
+
+            //currentIndex x-Achse zwischen 0 und tablesize (44100) 
+            if(x->currentStage != STAGE_SILENT || x->currentStage != STAGE_SUSTAIN){
+            x->currentIndex += vas_adsr_get_stepSize(x);
+            } 
+            *out++ = currentValue;
+
+            if(x->currentIndex >= x->tableSize){
+                x->currentIndex -= x->tableSize;
+                //noteOn soll in sustain bleiben bis noteoff Befehl für Release gibt
+                if(x->currentStage != STAGE_SUSTAIN) {
+                    vas_adsr_next_stage(x,x->currentMode);
+                }
+            }
+            break;
+
+	    default: printf("fehler"); break;
         }
-
     }
 }
 
@@ -108,11 +128,23 @@ float vas_adsr_get_stepSize(vas_adsr *x)
 
 //loop oder sustain einstellen , neuer Input für Modus (neue Variable)
 //#define MODE_LFO 0 #define MODE_TRIGGER 1 
-void vas_adsr_next_stage(vas_adsr *x)
+void vas_adsr_next_stage(vas_adsr *x, int mode)
 {
-    if(x->currentStage != STAGE_SILENT){
-        x->currentStage++;
-    } 
+  switch(mode) {
+
+	    case MODE_LFO: 
+            x->currentStage++;
+            if(x->currentStage>3){x->currentStage=0;}
+            break;
+
+	    case MODE_TRIGGER:
+            if(x->currentStage != STAGE_SILENT){
+                x->currentStage++;
+                }
+            break;
+
+	    default: printf("fehler"); break;
+        }
 
 }
 
