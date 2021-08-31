@@ -238,9 +238,9 @@ void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
     vas_adsr_noteOff(x->adsr1);  
 }
 
-void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, int mode)
+void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x)
 {
-    vas_adsr_modeswitch(mode);
+    vas_adsr_modeswitch(x->adsr1);
 }
 
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)

@@ -24,7 +24,7 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->sus_v = 0.5;
     x->resultvolume = 0.0F;
     x->currentStage = STAGE_SILENT;
-    x->currentMode = MODE_TRIGGER;
+    x->currentMode = MODE_LFO;
 
     vas_adsr_updateADSR(x); //initTables
     return x;
@@ -51,12 +51,18 @@ void vas_adsr_noteOff(vas_adsr *x)
 }
 
 //methode wechsel zwischen loop modus und sustain mode
-int vas_adsr_modeswitch(int modenew)
+void vas_adsr_modeswitch(vas_adsr *x)
 {
-  //  return modenew;
+     switch((int)x->currentMode){
+         case MODE_LFO:
+         x->currentMode = MODE_TRIGGER;
+         break;
+         case MODE_TRIGGER:
+         x->currentMode = MODE_LFO;
+         break;
+         default: printf("fehler"); break;
+     }
 }
-
-
 
 //process methode läuft in loop
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
@@ -69,7 +75,6 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
         //currentvalue y-achse zwischen 0 und 1
         currentValue = vas_adsr_get_current_value(x);
         currentValue *= *in++;
-        //mode = vas_adsr_modeswitch(mode);
 
         switch((int)x->currentMode) {
 

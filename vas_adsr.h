@@ -128,7 +128,7 @@ void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 //hinzufügen der neuen Funktionen zum Header
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
 void vas_adsr_noteOff(vas_adsr *x);
-int vas_adsr_modeswitch(int modenew);
+void vas_adsr_modeswitch(vas_adsr *x);
 
 #ifdef __cplusplus
 }

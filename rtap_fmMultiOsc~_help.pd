@@ -5931,16 +5931,16 @@
 #X floatatom 308 263 5 0 1 0 - - -;
 #X floatatom 428 263 5 0 99.9 0 - - -;
 #X obj 428 132 vsl 15 128 0.01 99.9 0 1 empty empty empty 0 -9 0 10
--262144 -1 -1 6700 1;
+-262144 -1 -1 10400 1;
 #X floatatom 470 263 5 0 1 0 - - -;
 #X obj 470 131 vsl 15 128 0 99.9 0 1 empty empty empty 0 -9 0 10 -262144
--1 -1 6500 1;
+-1 -1 5300 1;
 #X floatatom 509 263 5 0 1 0 - - -;
 #X obj 509 132 vsl 15 128 0 1 0 1 empty empty empty 0 -9 0 10 -262144
--1 -1 6400 1;
+-1 -1 8100 1;
 #X floatatom 548 264 5 0 1 0 - - -;
 #X obj 548 133 vsl 15 128 0 100 0 1 empty empty empty 0 -9 0 10 -262144
--1 -1 6200 1;
+-1 -1 6800 1;
 #X floatatom 661 267 5 0 1 0 - - -;
 #X floatatom 702 267 5 0 1 0 - - -;
 #X floatatom 742 267 5 0 1 0 - - -;
@@ -5953,7 +5953,7 @@
 #X obj 613 104 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 308 131 vsl 15 128 0 1 0 1 empty empty empty 0 -9 0 10 -262144
--1 -1 12700 1;
+-1 -1 2900 1;
 #X msg 15 315 I/O 1;
 #X msg 15 334 I/O 2;
 #X msg 69 315 I/O 11;
@@ -5974,7 +5974,7 @@
 #X obj 595 556 f;
 #X obj 594 536 r selected_adsr;
 #X obj 267 130 vsl 15 128 0.1 18000 1 1 empty empty empty 0 -9 0 10
--262144 -1 -1 8700 1;
+-262144 -1 -1 9000 1;
 #X obj 413 552 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj 578 576 pack \$1 \$2 \$3 \$4 \$5;
@@ -6010,8 +6010,8 @@
 #X text 71 45 ADSR 12;
 #X text 71 14 ADSR 11;
 #X msg 98 476 noteon 400 127;
-#X msg 105 383 adsr_mode 1;
 #X msg 91 434 noteoff;
+#X msg 106 383 adsr_mode;
 #X connect 2 0 3 0;
 #X connect 3 0 1 0;
 #X connect 4 0 35 0;
