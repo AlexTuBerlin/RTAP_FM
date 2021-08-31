@@ -29,6 +29,8 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->currentStage = STAGE_SILENT;
     x->currentMode = MODE_LFO;
 
+    x->is_note_on = 0;
+
     vas_adsr_updateADSR(x); //initTables
     return x;
 }
@@ -43,6 +45,7 @@ void vas_adsr_free(vas_adsr *x)
 
 void vas_adsr_noteOn(vas_adsr *x, float velocity)
 {
+    x->is_note_on = 1;
     x->currentStage = STAGE_ATTACK;
     x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
     
@@ -64,10 +67,12 @@ void vas_adsr_noteOn(vas_adsr *x, float velocity)
 //methode noteOff
 void vas_adsr_noteOff(vas_adsr *x)
 {
+x->is_note_on = 0;
    switch((int)x->currentMode){
         case MODE_LFO:
-            x->currentStage = STAGE_RELEASE;
-            x->currentMode = MODE_TRIGGER;
+            if(x->currentStage != STAGE_SILENT){
+                x->currentStage = STAGE_RELEASE;
+            }
         break;
         
         case MODE_TRIGGER:
@@ -78,16 +83,16 @@ void vas_adsr_noteOff(vas_adsr *x)
 }
 
 //methode wechsel zwischen loop modus und sustain mode
-void vas_adsr_modeswitch(vas_adsr *x)
+void vas_adsr_modeswitch(vas_adsr *x, float mode)
 {
-     switch((int)x->currentMode){
+     switch((int)mode){
 
          case MODE_LFO:
-            x->currentMode = MODE_TRIGGER;
+            x->currentMode = MODE_LFO;
          break;
 
          case MODE_TRIGGER:
-            x->currentMode = MODE_LFO;
+            x->currentMode = MODE_TRIGGER;
          break;
 
          default: printf("fehler"); break;
@@ -174,7 +179,9 @@ void vas_adsr_next_stage(vas_adsr *x, int mode)
 	    case MODE_LFO: 
             x->currentStage++;
             if(x->currentStage>4){
-                x->currentStage=0;
+                if(x->is_note_on==1){
+                  x->currentStage=0;  
+                }
             }
             break;
 
