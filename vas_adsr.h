@@ -32,6 +32,7 @@
 #define SCALE_DECAY 10
 #define SCALE_SUSTAIN 10
 #define SCALE_RELEASE 10
+#define SCALE_SILENT 10
 
 #define ADSR_MAX 100.0F
 #define VELOCITY_MAX 128.0F
@@ -65,6 +66,9 @@ typedef struct vas_adsr
     float dec_t;
     float sus_t;
     float rel_t;
+
+    // silent time 
+    float silent_time;
 
     float sus_v;
     float att_q;

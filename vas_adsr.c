@@ -21,6 +21,9 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->sus_t = 2;
     x->rel_t = 0.5;
 
+    // silent time 
+    x->silent_time = 0.5;
+
     x->sus_v = 0.5;
     x->resultvolume = 0.0F;
     x->currentStage = STAGE_SILENT;
@@ -42,24 +45,51 @@ void vas_adsr_noteOn(vas_adsr *x, float velocity)
 {
     x->currentStage = STAGE_ATTACK;
     x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
+    
+    /**switch((int)x->currentMode){
+        case MODE_LFO:
+            x->currentStage = STAGE_ATTACK;
+            x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
+        break;
+        
+        case MODE_TRIGGER:
+            x->currentStage = STAGE_ATTACK;
+            x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
+        break;
+        default: printf("fehler"); break;
+    }
+    */
 }
 
 //methode noteOff
 void vas_adsr_noteOff(vas_adsr *x)
 {
-   x->currentStage = STAGE_RELEASE;
+   switch((int)x->currentMode){
+        case MODE_LFO:
+            x->currentStage = STAGE_RELEASE;
+            x->currentMode = MODE_TRIGGER;
+        break;
+        
+        case MODE_TRIGGER:
+            x->currentStage = STAGE_RELEASE;
+        break;
+        default: printf("fehler"); break;
+    }
 }
 
 //methode wechsel zwischen loop modus und sustain mode
 void vas_adsr_modeswitch(vas_adsr *x)
 {
      switch((int)x->currentMode){
+
          case MODE_LFO:
-         x->currentMode = MODE_TRIGGER;
+            x->currentMode = MODE_TRIGGER;
          break;
+
          case MODE_TRIGGER:
-         x->currentMode = MODE_LFO;
+            x->currentMode = MODE_LFO;
          break;
+
          default: printf("fehler"); break;
      }
 }
@@ -127,7 +157,11 @@ float vas_adsr_get_stepSize(vas_adsr *x)
 
     else if(x->currentStage == STAGE_RELEASE){
         return (ADSR_MAX - x->rel_t)/SCALE_RELEASE;
-    }  
+    } 
+
+    else if(x->currentStage == STAGE_SILENT){
+        return (ADSR_MAX - x->silent_time)/SCALE_SILENT;
+    } 
     else {return 1;}
 }
 
@@ -139,7 +173,9 @@ void vas_adsr_next_stage(vas_adsr *x, int mode)
 
 	    case MODE_LFO: 
             x->currentStage++;
-            if(x->currentStage>3){x->currentStage=0;}
+            if(x->currentStage>4){
+                x->currentStage=0;
+            }
             break;
 
 	    case MODE_TRIGGER:
