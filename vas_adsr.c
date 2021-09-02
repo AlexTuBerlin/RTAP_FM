@@ -47,21 +47,7 @@ void vas_adsr_noteOn(vas_adsr *x, float velocity)
 {
     x->is_note_on = 1;
     x->currentStage = STAGE_ATTACK;
-    x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
-    
-    /**switch((int)x->currentMode){
-        case MODE_LFO:
-            x->currentStage = STAGE_ATTACK;
-            x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
-        break;
-        
-        case MODE_TRIGGER:
-            x->currentStage = STAGE_ATTACK;
-            x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;
-        break;
-        default: printf("fehler"); break;
-    }
-    */
+    x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;   
 }
 
 //methode noteOff

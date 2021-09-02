@@ -18,9 +18,13 @@
 
 #define OSC1_ID 1
 #define OSC2_ID 2
+#define OSC3_ID 3
+#define OSC4_ID 4
 
 #define ADSR1_ID 11
 #define ADSR2_ID 12
+#define ADSR3_ID 13
+#define ADSR4_ID 14
 
 static t_class *rtap_fmMultiOsc_tilde_class;
 
@@ -44,11 +48,19 @@ typedef struct rtap_fmMultiOsc_tilde
     int osc1_active;
     vas_osc *osc2;
     int osc2_active;
-
+    vas_osc *osc3;
+    int osc3_active;
+    vas_osc *osc4;
+    int osc4_active;
+    
     vas_adsr *adsr1;
     int adsr1_active;
     vas_adsr *adsr2;
     int adsr2_active;
+    vas_adsr *adsr3;
+    int adsr3_active;
+    vas_adsr *adsr4;
+    int adsr4_active;
 
     t_word *table;
     
@@ -76,6 +88,11 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     if(x->osc2_active) vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);
     if(x->adsr2_active) vas_adsr_process(x->adsr2, in, out, n); 
 
+    if(x->osc3_active) vas_osc_process(x->osc3, in, out, n, MODE_MOD_NO_INPUT);
+    if(x->adsr3_active) vas_adsr_process(x->adsr3, in, out, n);
+    if(x->osc4_active) vas_osc_process(x->osc4, in, out, n, MODE_CARRIER_WITH_INPUT);
+    if(x->adsr4_active) vas_adsr_process(x->adsr4, in, out, n); 
+    
     /* return a pointer to the dataspace for the next dsp-object */
     return (w+5);
 }
@@ -106,10 +123,13 @@ void rtap_fmMultiOsc_tilde_free(rtap_fmMultiOsc_tilde *x)
 
     vas_osc_free(x->osc1);
     vas_osc_free(x->osc2);
+    vas_osc_free(x->osc3);
+    vas_osc_free(x->osc4);
 
     vas_osc_free(x->adsr1);
     vas_osc_free(x->adsr2);
-
+    vas_osc_free(x->adsr3);
+    vas_osc_free(x->adsr4);
 }
 
 /**
@@ -139,19 +159,29 @@ void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array
     }
 }
 
-void rtap_write2FloatArray_osc1(rtap_fmMultiOsc_tilde *x)
+void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
 {
-    for (int i=0;i<44100; i++)
-    {
-        x->osc1->lookupTable[i] = x->table[i].w_float;
-    }
-}
-
-void rtap_write2FloatArray_osc2(rtap_fmMultiOsc_tilde *x)
-{
-    for (int i=0;i<44100; i++)
-    {
-        x->osc2->lookupTable[i] = x->table[i].w_float;
+    switch ((int)id){
+        case OSC1_ID :
+            for (int i=0;i<44100; i++)
+            {
+                x->osc1->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC2_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc2->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC3_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc3->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC4_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc4->lookupTable[i] = x->table[i].w_float;
+            }    
     }
 }
 
@@ -159,12 +189,8 @@ void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *na
 {
     int length = 0;
     rtap_getArray(x, name, &x->table, &length);
-    switch ((int)id){
-        case OSC1_ID :
-            rtap_write2FloatArray_osc1(x);
-        case OSC2_ID :
-            rtap_write2FloatArray_osc2(x);
-    }
+    rtap_write2FloatArray_osc(x,id);
+
 }
 
 void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x, float frequency, float id)
@@ -174,6 +200,10 @@ void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x, float freq
             vas_osc_setFrequency(x->osc1, frequency);
         case OSC2_ID :
             vas_osc_setFrequency(x->osc2, frequency);
+        case OSC3_ID :
+            vas_osc_setFrequency(x->osc3, frequency);
+        case OSC4_ID :
+            vas_osc_setFrequency(x->osc4, frequency);
     }
 }
 
@@ -184,6 +214,10 @@ void rtap_fmMultiOsc_tilde_osc_setAmp(rtap_fmMultiOsc_tilde *x, float amp, float
             vas_osc_setAmp(x->osc1, amp);
         case OSC2_ID :
             vas_osc_setAmp(x->osc2, amp);
+        case OSC3_ID :
+            vas_osc_setAmp(x->osc3, amp);
+        case OSC4_ID :
+            vas_osc_setAmp(x->osc4, amp);
     }
 }
 
@@ -194,6 +228,10 @@ void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, f
             vas_adsr_setADSR_values(x->adsr1, a,d,s,r);
         case ADSR2_ID :
             vas_adsr_setADSR_values(x->adsr2, a,d,s,r);
+        case ADSR3_ID :
+            vas_adsr_setADSR_values(x->adsr3, a,d,s,r);
+        case ADSR4_ID :
+            vas_adsr_setADSR_values(x->adsr4, a,d,s,r);    
     }
 }
 
@@ -204,6 +242,10 @@ void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st, f
             vas_adsr_set_Silent_time(x->adsr1,st);
         case ADSR2_ID :
             vas_adsr_set_Silent_time(x->adsr2,st);
+        case ADSR3_ID :
+            vas_adsr_set_Silent_time(x->adsr3,st);
+        case ADSR4_ID :
+            vas_adsr_set_Silent_time(x->adsr4,st);
     }
 }
 
@@ -214,6 +256,10 @@ void rtap_fmMultiOsc_tilde_setADSR_Q(rtap_fmMultiOsc_tilde *x, float a, float d,
             vas_adsr_setQ(x->adsr1,a,d,r);
         case ADSR2_ID :
             vas_adsr_setQ(x->adsr2,a,d,r);
+        case ADSR3_ID :
+            vas_adsr_setQ(x->adsr3,a,d,r);
+        case ADSR4_ID :
+            vas_adsr_setQ(x->adsr4,a,d,r);
     }
 }
 
@@ -226,25 +272,63 @@ void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
         case OSC2_ID : 
             x->osc2_active = abs(x->osc2_active - 1);
             break;
+        case OSC3_ID : 
+            x->osc3_active = abs(x->osc3_active - 1);
+            break;
+        case OSC4_ID : 
+            x->osc4_active = abs(x->osc4_active - 1);
+            break;
         case ADSR1_ID : 
             x->adsr1_active = abs(x->adsr1_active - 1);
             break;
         case ADSR2_ID : 
             x->adsr2_active = abs(x->adsr2_active - 1);
             break;
+        case ADSR3_ID : 
+            x->adsr3_active = abs(x->adsr3_active - 1);
+            break;
+        case ADSR4_ID : 
+            x->adsr4_active = abs(x->adsr4_active - 1);
+            break;
     }
 }
 
-void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x,float frequency, float velocity)
+void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, float velocity, float id)
 {
-    rtap_fmMultiOsc_tilde_osc_setFrequency(x,frequency, OSC2_ID);
-    vas_adsr_noteOn(x->adsr1, velocity);
+    rtap_fmMultiOsc_tilde_osc_setFrequency(x,frequency, id);
+    switch ((int)id){
+        case ADSR1_ID : 
+            vas_adsr_noteOn(x->adsr1, velocity);
+            break;
+        case ADSR2_ID : 
+            vas_adsr_noteOn(x->adsr2, velocity);
+            break;
+        case ADSR3_ID : 
+            vas_adsr_noteOn(x->adsr3, velocity);
+            break;
+        case ADSR4_ID : 
+            vas_adsr_noteOn(x->adsr4, velocity);
+            break;
+    }
     
 }
 
-void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
-{
-    vas_adsr_noteOff(x->adsr1);  
+void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x, float id)
+{   
+    switch ((int)id){
+        case ADSR1_ID : 
+            vas_adsr_noteOff(x->adsr1);  
+            break;
+        case ADSR2_ID : 
+            vas_adsr_noteOff(x->adsr2);  
+            break;
+        case ADSR3_ID : 
+            vas_adsr_noteOff(x->adsr3);  
+            break;
+        case ADSR4_ID : 
+            vas_adsr_noteOff(x->adsr4);  
+            break;
+    }
 }
 
 void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
@@ -255,6 +339,12 @@ void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float 
             break;
         case ADSR2_ID : 
             vas_adsr_modeswitch(x->adsr2, mode);
+            break;
+        case ADSR3_ID : 
+            vas_adsr_modeswitch(x->adsr3, mode);
+            break;
+        case ADSR4_ID : 
+            vas_adsr_modeswitch(x->adsr4, mode);
             break;
     }
 }
@@ -272,11 +362,23 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
     x->osc2 = vas_osc_new(44100);
     x->osc2_active = 0;
 
+    x->osc3 = vas_osc_new(44100);
+    x->osc3_active = 1;
+
+    x->osc4 = vas_osc_new(44100);
+    x->osc4_active = 0;
+
     x->adsr1 = vas_adsr_new(44100);
     x->adsr1_active = 0;
 
     x->adsr2 = vas_adsr_new(44100);
     x->adsr2_active = 0;
+
+    x->adsr3 = vas_adsr_new(44100);
+    x->adsr3_active = 0;
+
+    x->adsr4 = vas_adsr_new(44100);
+    x->adsr4_active = 0;
 
     return (void *)x;
 }
@@ -310,14 +412,14 @@ void rtap_fmMultiOsc_tilde_setup(void)
 
       // this adds the gain message to our object
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_setFrequency, gensym("osc_freq"), A_DEFFLOAT,A_DEFFLOAT, 0);
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setExternTable, gensym("osc_table"), A_SYMBOL,A_DEFFLOAT, 0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setExternTable, gensym("osc_table"), A_SYMBOL,A_DEFFLOAT, 0); 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_setAmp, gensym("osc_amp"), A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR, gensym("adsr"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR_Q, gensym("adsr_Q"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_toggle_active, gensym("I/O"),A_DEFFLOAT, 0);
 
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,A_DEFFLOAT,0);    
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),A_DEFFLOAT,0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,A_DEFFLOAT,A_DEFFLOAT,0);  
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_set_Silent_time,gensym("silent_time"),A_DEFFLOAT,A_DEFFLOAT,0);  
 

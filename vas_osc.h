@@ -102,7 +102,6 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mod
  */
 void vas_osc_setFrequency(vas_osc *x, float frequency);
 void vas_osc_setAmp(vas_osc *x, float amp);
-void vas_osc_noteOn(vas_osc *x, float frequency, float velocity);
 void vas_osc_updateADSR(vas_osc *x, float a, float d, float s , float r);
 float vas_osc_calc_stepSize_Att(int tableSize, float attVal, float sumVal);
 float vas_osc_calc_stepSize_Dec(int tableSize, float decVal, float sumVal, float susVal);
