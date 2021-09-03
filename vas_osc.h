@@ -25,6 +25,8 @@
 #define MODE_CARRIER_WITH_INPUT 3 
 #define MODE_SUM_WITH_IN 4
 
+#define SAMPLING_FREQUENCY 44100
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -58,6 +60,9 @@ typedef struct vas_osc
     float amp;
     float *lookupTable;
     float *lookupTableADSR;
+    float frequency_factor;
+    float amp_factor;
+
     vas_osc_adsr adsr;
 
 } vas_osc;
@@ -69,7 +74,7 @@ typedef struct vas_osc
  * the delay class
  * @return a pointer to the newly created vas_osc object <br>
  */
-vas_osc *vas_osc_new(int tableSize);
+vas_osc *vas_osc_new(int tableSize, float master_frequency);
 
 /**
  * @related vas_osc
@@ -100,8 +105,8 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mod
  * Sets the delay time in samples with floating point precision. <br>
  * Delays exceeding the buffer size are handeled by setting the delay to zero. <br>
  */
-void vas_osc_setFrequency(vas_osc *x, float frequency, float frequency_factor);
-void vas_osc_setAmp(vas_osc *x, float amp, float amp_factor);
+void vas_osc_setFrequency(vas_osc *x,float master_frequency, float frequency_factor);
+void vas_osc_setAmp(vas_osc *x, float master_amp, float amp_factor);
 void vas_osc_updateADSR(vas_osc *x, float a, float d, float s , float r);
 float vas_osc_calc_stepSize_Att(int tableSize, float attVal, float sumVal);
 float vas_osc_calc_stepSize_Dec(int tableSize, float decVal, float sumVal, float susVal);
