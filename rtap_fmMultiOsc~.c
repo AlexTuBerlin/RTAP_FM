@@ -307,7 +307,7 @@ void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
 
 void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, float velocity)
 {
-    //rtap_fmMultiOsc_tilde_osc_setFrequency(x,OSC1_ID,frequency);
+    rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(x,x->master_frequency);
     vas_adsr_noteOn(x->adsr1, velocity);
     vas_adsr_noteOn(x->adsr2, velocity);
     vas_adsr_noteOn(x->adsr3, velocity);

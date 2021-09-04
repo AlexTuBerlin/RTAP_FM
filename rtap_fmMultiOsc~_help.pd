@@ -5967,9 +5967,9 @@
 #X obj 1257 700 r selected_adsr;
 #X msg 1237 762 adsr \$2 \$3 \$4 \$5 \$6;
 #X msg 1599 769 adsr_Q \$2 \$3 \$4 \$5;
-#X obj 402 381 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 402 381 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 402 351 tgl 30 1 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 402 351 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 933 344 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -5999,19 +5999,19 @@
 #X msg 899 766 I/O 14;
 #X msg 552 962 noteoff, f 36;
 #X obj 480 358 hsl 128 15 0.01 100 1 1 empty empty empty -2 -8 0 10
--262144 -1 -1 5150 1;
+-262144 -1 -1 6350 1;
 #X text 363 357 OSC 1;
 #X text 496 329 Freq Factor;
 #X floatatom 439 356 5 0 0 0 - - -;
 #X obj 673 358 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
+-1 -1 4100 1;
 #X floatatom 633 356 5 0 0 0 - - -;
 #X text 686 326 Amp Factor;
 #X obj 480 388 hsl 128 15 0.01 100 1 1 empty empty empty -2 -8 0 10
--262144 -1 -1 5250 1;
+-262144 -1 -1 6350 1;
 #X floatatom 440 386 5 0 0 0 - - -;
 #X obj 674 388 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
+-1 -1 0 1;
 #X floatatom 634 386 5 0 0 0 - - -;
 #X obj 481 418 hsl 128 15 0.01 100 1 1 empty empty empty -2 -8 0 10
 -262144 -1 -1 6350 1;
@@ -6029,10 +6029,10 @@
 #X text 362 440 OSC 4;
 #X msg 371 579 osc_master_freq \$1;
 #X obj 447 169 vsl 30 128 20 12000 1 0 empty empty empty 0 -9 0 10
--262144 -1 -1 5737 1;
+-262144 -1 -1 6137 1;
 #X msg 523 578 osc_master_amp \$1;
 #X obj 641 169 vsl 30 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 900 1;
+-1 -1 300 1;
 #X obj 1121 344 vradio 30 1 0 4 empty empty empty 0 -8 0 10 -262144
 -1 -1 0;
 #X text 877 352 ADSR 1;

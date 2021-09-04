@@ -39,13 +39,14 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
     {
         
         int intIndex = floor(x->currentIndex);
-        currentValue = x->lookupTable[intIndex];
+        currentValue = (1-(x->amp))*(*in)+x->lookupTable[intIndex]*x->amp;
 
         switch(mode) {
 
 	    case MODE_MOD_NO_INPUT: 
 
             x->currentIndex += x->frequency;
+            currentValue = x->lookupTable[intIndex]*x->amp;
             break;
 
 	    case MODE_MOD_WITH_INPUT:
@@ -54,18 +55,19 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
             break;
 
 	    case MODE_CARRIER_NO_INPUT:
-
+            
             x->currentIndex += x->frequency;
+            currentValue = x->lookupTable[intIndex]*x->amp;
             break;
 
         case MODE_CARRIER_WITH_INPUT:
-
+        
             x->currentIndex += (1 + *in++) * x->frequency;
             break;
 
         case MODE_SUM_WITH_IN:
 
-            currentValue = (currentValue + *in++) * 0.5;
+            currentValue = ((x->amp)*currentValue + *in++)*(1-((x->amp)/2));
             x->currentIndex += x->frequency;
             break;
 
@@ -73,7 +75,7 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
         }
 
         x->adsrIndex++;
-        *out++ = currentValue * x->amp;
+        *out++ = currentValue;
 
         if(x->currentIndex >= x->tableSize)
          x->currentIndex -= x->tableSize;
