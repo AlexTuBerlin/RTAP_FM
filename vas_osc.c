@@ -83,18 +83,24 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
     }
 }
 
-void vas_osc_setFrequency(vas_osc *x,float master_frequency, float frequency_factor)
+void vas_osc_set_frequency_factor(vas_osc *x,float master_frequency, float frequency_factor)
 {
     if(frequency_factor > 0){
         x->frequency_factor = frequency_factor;
-        x->frequency = frequency_factor*master_frequency;
+        x->frequency = (x->frequency_factor)*master_frequency;
     }
 }
 
-void vas_osc_setAmp(vas_osc *x,float master_amp, float amp_factor)
+void vas_osc_set_master_frequency(vas_osc *x,float master_frequency)
+{
+    if(master_frequency > 0){
+        x->frequency = (x->frequency_factor)*master_frequency;
+    }
+}
+
+void vas_osc_setAmp(vas_osc *x, float amp_factor)
 {
     if(amp_factor >= 0 && amp_factor <= 1){
-        x->amp_factor = amp_factor;
-        x->amp = amp_factor*master_amp;
+        x->amp = amp_factor;
     }
 }

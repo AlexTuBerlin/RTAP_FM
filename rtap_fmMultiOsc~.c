@@ -26,6 +26,8 @@
 #define ADSR3_ID 13
 #define ADSR4_ID 14
 
+#define SAMPLING_FREQUENCY 44100
+
 static t_class *rtap_fmMultiOsc_tilde_class;
 
 /**
@@ -86,15 +88,9 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     t_sample  *out =  (t_sample *)(w[3]);
     int n =  (int)(w[4]);
 
-    if(x->osc1_active) vas_osc_process(x->osc1, in, out, n, MODE_MOD_NO_INPUT);
-    if(x->adsr1_active) vas_adsr_process(x->adsr1, in, out, n);
-    if(x->osc2_active) vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);
-    if(x->adsr2_active) vas_adsr_process(x->adsr2, in, out, n); 
-    if(x->osc3_active) vas_osc_process(x->osc3, in, out, n, MODE_CARRIER_WITH_INPUT);
-    if(x->adsr3_active) vas_adsr_process(x->adsr3, in, out, n);
-    if(x->osc4_active) vas_osc_process(x->osc4, in, out, n, MODE_CARRIER_WITH_INPUT);
-    if(x->adsr4_active) vas_adsr_process(x->adsr4, in, out, n); 
-    
+    rtap_fmMultiOsc_tilde_alg1(x,in,out,n);
+    rtap_fmMultiOsc_tilde_gainstage(x,in,out,n);
+
     /* return a pointer to the dataspace for the next dsp-object */
     return (w+5);
 }
@@ -199,46 +195,42 @@ void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, f
 {
     switch ((int)id){
         case OSC1_ID :
-            vas_osc_setFrequency(x->osc1,x->master_frequency,frequency_factor);
+            vas_osc_set_frequency_factor(x->osc1,x->master_frequency,frequency_factor);
         case OSC2_ID :
-            vas_osc_setFrequency(x->osc2,x->master_frequency,frequency_factor);
+            vas_osc_set_frequency_factor(x->osc2,x->master_frequency,frequency_factor);
         case OSC3_ID :
-            vas_osc_setFrequency(x->osc3,x->master_frequency,frequency_factor);
+            vas_osc_set_frequency_factor(x->osc3,x->master_frequency,frequency_factor);
         case OSC4_ID :
-            vas_osc_setFrequency(x->osc4,x->master_frequency,frequency_factor);
+           vas_osc_set_frequency_factor(x->osc4,x->master_frequency,frequency_factor);
     }
 }
 
 void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, float master_frequency)
 {
     x->master_frequency=master_frequency;
-    vas_osc_setFrequency(x->osc1,x-> master_frequency,x->osc1->frequency_factor);
-    vas_osc_setFrequency(x->osc2,x-> master_frequency,x->osc2->frequency_factor);
-    vas_osc_setFrequency(x->osc3,x-> master_frequency,x->osc3->frequency_factor);
-    vas_osc_setFrequency(x->osc4,x-> master_frequency,x->osc4->frequency_factor);
+    vas_osc_set_master_frequency(x->osc1,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc2,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc3,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc4,x-> master_frequency);
 }
 
 void rtap_fmMultiOsc_tilde_osc_setAmp(rtap_fmMultiOsc_tilde *x, float id, float amp_factor)
 {
     switch ((int)id){
         case OSC1_ID :
-            vas_osc_setAmp(x->osc1,x->master_amp, amp_factor);
+            vas_osc_setAmp(x->osc1, amp_factor);
         case OSC2_ID :
-            vas_osc_setAmp(x->osc2,x->master_amp, amp_factor);
+            vas_osc_setAmp(x->osc2, amp_factor);
         case OSC3_ID :
-            vas_osc_setAmp(x->osc3,x->master_amp, amp_factor);
+            vas_osc_setAmp(x->osc3, amp_factor);
         case OSC4_ID :
-            vas_osc_setAmp(x->osc4,x->master_amp, amp_factor);
+            vas_osc_setAmp(x->osc4, amp_factor);
     }
 }
 
 void rtap_fmMultiOsc_tilde_osc_set_Master_Amp(rtap_fmMultiOsc_tilde *x, float master_amp)
 {
     x->master_amp=master_amp;
-    vas_osc_setAmp(x->osc1,x-> master_amp,x->osc1->amp_factor);
-    vas_osc_setAmp(x->osc2,x-> master_amp,x->osc2->amp_factor);
-    vas_osc_setAmp(x->osc3,x-> master_amp,x->osc3->amp_factor);
-    vas_osc_setAmp(x->osc4,x-> master_amp,x->osc4->amp_factor);
 }
 
 void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, float s, float r, float id)
@@ -315,28 +307,19 @@ void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
 
 void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, float velocity)
 {
-    rtap_fmMultiOsc_tilde_osc_setFrequency(x,frequency,OSC1_ID);
-
+    //rtap_fmMultiOsc_tilde_osc_setFrequency(x,OSC1_ID,frequency);
     vas_adsr_noteOn(x->adsr1, velocity);
-
     vas_adsr_noteOn(x->adsr2, velocity);
-
     vas_adsr_noteOn(x->adsr3, velocity);
-
     vas_adsr_noteOn(x->adsr4, velocity);
-  
 }
 
 void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
 {   
-            vas_adsr_noteOff(x->adsr1);  
-
-            vas_adsr_noteOff(x->adsr2);  
-
-            vas_adsr_noteOff(x->adsr3);  
-
-            vas_adsr_noteOff(x->adsr4);  
-
+    vas_adsr_noteOff(x->adsr1);  
+    vas_adsr_noteOff(x->adsr2);  
+    vas_adsr_noteOff(x->adsr3);  
+    vas_adsr_noteOff(x->adsr4);  
 }
 
 void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
@@ -357,12 +340,38 @@ void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float 
     }
 }
 
+void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float *out, int vectorSize)
+{
+    int i = vectorSize;
+    float currentValue= 0.0F;
+        while(i--)
+        {
+            currentValue=*in++;
+            *out++ = currentValue * x->master_amp;
+        }
+}
+
+void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_MOD_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 {
     rtap_fmMultiOsc_tilde *x = (rtap_fmMultiOsc_tilde *)pd_new(rtap_fmMultiOsc_tilde_class);
     
     //The main inlet is created automatically
     x->out = outlet_new(&x->x_obj, &s_signal);
+
+    x->master_amp=1;
+    x->master_frequency=440;
 
     x->osc1 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
     x->osc1_active = 1;
@@ -409,12 +418,12 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 
 void rtap_fmMultiOsc_tilde_setup(void)
 {
-      rtap_fmMultiOsc_tilde_class = class_new(gensym("rtap_fmMultiOsc~"),
-            (t_newmethod)rtap_fmMultiOsc_tilde_new,
-            (t_method)rtap_fmMultiOsc_tilde_free,
+    rtap_fmMultiOsc_tilde_class = class_new(gensym("rtap_fmMultiOsc~"),
+        (t_newmethod)rtap_fmMultiOsc_tilde_new,
+        (t_method)rtap_fmMultiOsc_tilde_free,
         sizeof(rtap_fmMultiOsc_tilde),
-            CLASS_DEFAULT,
-            A_DEFFLOAT, 0);
+        CLASS_DEFAULT,
+        A_DEFFLOAT, 0);
 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_dsp, gensym("dsp"), 0);
 
@@ -428,7 +437,7 @@ void rtap_fmMultiOsc_tilde_setup(void)
 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),0);
-      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,A_DEFFLOAT,A_DEFFLOAT,0);  
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,A_DEFFLOAT,0);  
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_set_Silent_time,gensym("silent_time"),A_DEFFLOAT,A_DEFFLOAT,0); 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_set_Master_Frequency, gensym("osc_master_freq"),A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_set_Master_Amp, gensym("osc_master_amp"),A_DEFFLOAT, 0);
