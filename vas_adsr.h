@@ -67,8 +67,8 @@ typedef struct vas_adsr
     float sus_t;
     float rel_t;
 
-    // silent time 
     float silent_time;
+    float sustain_time;
 
     float sus_v;
     float att_q;
@@ -134,7 +134,7 @@ void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
 void vas_adsr_noteOff(vas_adsr *x);
 void vas_adsr_modeswitch(vas_adsr *x, float mode);
-void vas_adsr_set_Silent_time(vas_adsr *x,float st);
+void vas_adsr_set_Silent_time(vas_adsr *x,float st, float sus_time);
 
 #ifdef __cplusplus
 }

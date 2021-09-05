@@ -18,13 +18,13 @@ vas_adsr *vas_adsr_new(int tableSize)
 
     x->att_t = 0.5;
     x->dec_t = 0.5;
-    x->sus_t = 2;
+    x->sus_v = 0.5;
     x->rel_t = 0.5;
 
     // silent time 
     x->silent_time = 0.5;
+    x->sustain_time = 0.5;
 
-    x->sus_v = 0.5;
     x->resultvolume = 0.0F;
     x->currentStage = STAGE_SILENT;
     x->currentMode = MODE_LFO;
@@ -143,7 +143,7 @@ float vas_adsr_get_stepSize(vas_adsr *x)
     }
 
     else if(x->currentStage == STAGE_SUSTAIN){
-        return x->sus_t;
+        return (ADSR_MAX - x->sustain_time)/SCALE_SUSTAIN;
     }   
 
     else if(x->currentStage == STAGE_RELEASE){
@@ -245,9 +245,10 @@ void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r)
     if(r>0 && r!=x->rel_t){x->rel_t = r;}
 }
 
-void vas_adsr_set_Silent_time(vas_adsr *x, float st)
+void vas_adsr_set_Silent_time(vas_adsr *x, float st, float sus_t)
 {
     if(st>0 && st!=x->silent_time){x->silent_time = st;}
+    if(sus_t>0 && sus_t!=x->sustain_time){x->sustain_time = sus_t;}
 }
 
 
