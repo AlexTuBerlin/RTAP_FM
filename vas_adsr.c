@@ -195,7 +195,7 @@ void vas_adsr_updateADSR(vas_adsr *x)
 
 float vas_adsr_get_current_value(vas_adsr *x)
 {
-    float sustain = x->resultvolume;
+    float sustain = x->resultvolume*x->sus_v;
     float decayQuality = x->dec_q;
     float x_normalized = x->currentIndex/(float)x->tableSize;
     int intIndex = floor(x->currentIndex);

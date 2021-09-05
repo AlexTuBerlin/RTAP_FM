@@ -64,13 +64,12 @@ typedef struct vas_adsr
 
     float att_t;
     float dec_t;
-    float sus_t;
+    float sus_v;
     float rel_t;
 
     float silent_time;
     float sustain_time;
 
-    float sus_v;
     float att_q;
     float dec_q;
     float rel_q;
