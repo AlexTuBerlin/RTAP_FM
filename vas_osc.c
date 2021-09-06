@@ -43,12 +43,6 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
 
         switch(mode) {
 
-	    case MODE_MOD_NO_INPUT: 
-
-            x->currentIndex += x->frequency;
-            currentValue = x->lookupTable[intIndex]*x->amp;
-            break;
-
 	    case MODE_MOD_WITH_INPUT:
 
             x->currentIndex += (1 + *in++) * x->frequency;
@@ -58,11 +52,6 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
             
             x->currentIndex += x->frequency;
             currentValue = x->lookupTable[intIndex]*x->amp;
-            break;
-
-        case MODE_CARRIER_WITH_INPUT:
-        
-            x->currentIndex += (1 + *in++) * x->frequency;
             break;
 
         case MODE_SUM_WITH_IN:

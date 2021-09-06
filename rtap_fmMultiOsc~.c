@@ -26,6 +26,11 @@
 #define ADSR3_ID 13
 #define ADSR4_ID 14
 
+#define ALG_1 1
+#define ALG_2 2
+#define ALG_3 3
+#define ALG_4 4
+
 #define SAMPLING_FREQUENCY 44100
 
 static t_class *rtap_fmMultiOsc_tilde_class;
@@ -66,6 +71,7 @@ typedef struct rtap_fmMultiOsc_tilde
 
     float master_frequency;
     float master_amp;
+    int current_algorithm;
 
     t_word *table;
     
@@ -87,8 +93,8 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     t_sample  *in = (t_sample *)(w[2]);
     t_sample  *out =  (t_sample *)(w[3]);
     int n =  (int)(w[4]);
-
-    rtap_fmMultiOsc_tilde_alg1(x,in,out,n);
+    
+    rtap_root_algoritm(x,in,out,n);
     rtap_fmMultiOsc_tilde_gainstage(x,in,out,n);
 
     /* return a pointer to the dataspace for the next dsp-object */
@@ -154,6 +160,24 @@ void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array
     else
     {
         post("Reading IRs from array %s", arrayname->s_name);
+    }
+}
+
+void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+        switch ((int)x->current_algorithm){
+            case ALG_1 :
+                rtap_fmMultiOsc_tilde_alg1(x,in,out,n);
+                break;
+            case ALG_2 : 
+                rtap_fmMultiOsc_tilde_alg2(x,in,out,n);
+                break;
+             case ALG_3 : 
+                rtap_fmMultiOsc_tilde_alg3(x,in,out,n);
+                break;
+            case ALG_4 :
+                rtap_fmMultiOsc_tilde_alg4(x,in,out,n);
+                break;  
     }
 }
 
@@ -340,6 +364,11 @@ void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float 
     }
 }
 
+void rtap_fmMultiOsc_tilde_algorithmode(rtap_fmMultiOsc_tilde *x, float alg_mode)
+{
+    x->current_algorithm = alg_mode;
+}
+
 void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float *out, int vectorSize)
 {
     int i = vectorSize;
@@ -353,14 +382,72 @@ void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float 
 
 void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
 {
-    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_MOD_NO_INPUT);}
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
     if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
-    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_MOD_WITH_INPUT);}
     if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
-    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
     if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
-    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_CARRIER_WITH_INPUT);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
     if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+void rtap_fmMultiOsc_tilde_alg2(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+void rtap_fmMultiOsc_tilde_alg3(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_MOD_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+void rtap_fmMultiOsc_tilde_alg4(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
+{
+     switch ((int)id){
+        case OSC1_ID : 
+            vas_osc_free(x->osc1);
+            x->osc1 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC2_ID : 
+            vas_osc_free(x->osc2);
+            x->osc2 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC3_ID : 
+            vas_osc_free(x->osc3);
+            x->osc3 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC4_ID : 
+            vas_osc_free(x->osc4);
+            x->osc4 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+     }
 }
 
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
@@ -372,6 +459,7 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 
     x->master_amp=1;
     x->master_frequency=440;
+    x->current_algorithm=ALG_1;
 
     x->osc1 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
     x->osc1_active = 1;
@@ -441,6 +529,8 @@ void rtap_fmMultiOsc_tilde_setup(void)
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_set_Silent_time,gensym("silent_time"),A_DEFFLOAT,A_DEFFLOAT,A_DEFFLOAT,0); 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_set_Master_Frequency, gensym("osc_master_freq"),A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_set_Master_Amp, gensym("osc_master_amp"),A_DEFFLOAT, 0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_reset_waveform, gensym("reset_waveform"),A_DEFFLOAT, 0);
+      class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_algorithmode,gensym("algorithm_mode"),A_DEFFLOAT,0);  
 
       CLASS_MAINSIGNALIN(rtap_fmMultiOsc_tilde_class, rtap_fmMultiOsc_tilde, f);
 }

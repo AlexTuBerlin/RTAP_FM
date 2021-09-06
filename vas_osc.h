@@ -19,11 +19,9 @@
 #include "vas_mem.h"
 #include "vas_util.h"
 
-#define MODE_MOD_NO_INPUT 0
-#define MODE_MOD_WITH_INPUT 1 
-#define MODE_CARRIER_NO_INPUT 2 
-#define MODE_CARRIER_WITH_INPUT 3 
-#define MODE_SUM_WITH_IN 4
+#define MODE_MOD_WITH_INPUT 0 
+#define MODE_CARRIER_NO_INPUT 1
+#define MODE_SUM_WITH_IN 2
 
 //#define SAMPLING_FREQUENCY 44100
 
