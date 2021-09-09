@@ -5,7 +5,7 @@
  * Real Time Audio Programming in C, SS 2021<br>
  * Main object for pure data <br>
  * <br>
- * @brief A Pure Data object that bindes ADSR and Oscialitor together<br>
+ * @brief A Pure Data object that bindes ADSR and oscillator together<br>
  * <br>
  * rtap_fmMultiOsc~ allows for adjusting the level<br>
  * of any incoming audio signal. <br>
@@ -380,12 +380,6 @@ void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float 
         }
 }
 
-/**
- * @related rtap_fmMultiOsc_tilde
- * @brief Sets the clipping level parameter. <br>
- * @param x A pointer the rtap_fmMultiOsc_tilde object <br>
- * @param makeUpLevel Sets the makeUpLevel parameter <br>
- */
 
 void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
 {
@@ -496,21 +490,6 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 }
 
 
-/**
- * @related rtap_fmMultiOsc_tilde
- * @brief Sets the gain adjustment parameter. <br>
- * @param x A pointer the rtap_fmMultiOsc_tilde object <br>
- * @param level Sets the level parameter <br>
- * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
- */
-
-
-/**
- * @related rtap_fmMultiOsc_tilde
- * @brief Setup of rtap_fmMultiOsc_tilde <br>
- * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
- */
-
 void rtap_fmMultiOsc_tilde_setup(void)
 {
     rtap_fmMultiOsc_tilde_class = class_new(gensym("rtap_fmMultiOsc~"),
@@ -521,15 +500,12 @@ void rtap_fmMultiOsc_tilde_setup(void)
         A_DEFFLOAT, 0);
 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_dsp, gensym("dsp"), 0);
-
-      // this adds the gain message to our object
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_setFrequency, gensym("osc_freq"), A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setExternTable, gensym("osc_table"), A_SYMBOL,A_DEFFLOAT, 0); 
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_osc_setAmp, gensym("osc_amp"), A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR, gensym("adsr"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_setADSR_Q, gensym("adsr_Q"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT,A_DEFFLOAT, 0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_toggle_active, gensym("I/O"),A_DEFFLOAT, 0);
-
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOn,gensym("noteon"),A_DEFFLOAT,A_DEFFLOAT,0);    
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_noteOff,gensym("noteoff"),0);
       class_addmethod(rtap_fmMultiOsc_tilde_class, (t_method)rtap_fmMultiOsc_tilde_ADSRmode,gensym("adsr_mode"),A_DEFFLOAT,A_DEFFLOAT,0);  
