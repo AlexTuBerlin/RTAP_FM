@@ -11,7 +11,6 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->lookupTable_release = (float *) vas_mem_alloc(x-> tableSize * sizeof(float));
     x->currentIndex = 0;
 
-    //defaulat linear slope
     x->att_q = 1;
     x->dec_q = 1;
     x->rel_q = 1;
@@ -21,7 +20,6 @@ vas_adsr *vas_adsr_new(int tableSize)
     x->sus_v = 0.5;
     x->rel_t = 0.5;
 
-    // silent time 
     x->silent_time = 0.5;
     x->sustain_time = 0.5;
 
@@ -31,7 +29,7 @@ vas_adsr *vas_adsr_new(int tableSize)
 
     x->is_note_on = 0;
 
-    vas_adsr_updateADSR(x); //initTables
+    vas_adsr_updateADSR(x);
     return x;
 }
 
@@ -50,7 +48,6 @@ void vas_adsr_noteOn(vas_adsr *x, float velocity)
     x->resultvolume = x->sus_v * velocity/VELOCITY_MAX;   
 }
 
-//methode noteOff
 void vas_adsr_noteOff(vas_adsr *x)
 {
 x->is_note_on = 0;
@@ -68,7 +65,6 @@ x->is_note_on = 0;
     }
 }
 
-//methode wechsel zwischen loop modus und sustain mode
 void vas_adsr_modeswitch(vas_adsr *x, float mode)
 {
      switch((int)mode){
@@ -85,7 +81,6 @@ void vas_adsr_modeswitch(vas_adsr *x, float mode)
      }
 }
 
-//process methode läuft in loop
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
 {
     int i = vectorSize;
@@ -93,7 +88,6 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
     
     while(i--)
     {
-        //currentvalue y-achse zwischen 0 und 1
         currentValue = vas_adsr_get_current_value(x);
         currentValue *= *in++;
 
@@ -112,7 +106,6 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
 
 	    case MODE_TRIGGER:
 
-            //currentIndex x-Achse zwischen 0 und tablesize (44100) 
             if(x->currentStage != STAGE_SILENT || x->currentStage != STAGE_SUSTAIN){
             x->currentIndex += vas_adsr_get_stepSize(x);
             } 
@@ -120,7 +113,6 @@ void vas_adsr_process(vas_adsr *x, float *in, float *out, int vectorSize)
 
             if(x->currentIndex >= x->tableSize){
                 x->currentIndex -= x->tableSize;
-                //noteOn soll in sustain bleiben bis noteoff Befehl für Release gibt
                 if(x->currentStage != STAGE_SUSTAIN) {
                     vas_adsr_next_stage(x,x->currentMode);
                 }
@@ -156,8 +148,6 @@ float vas_adsr_get_stepSize(vas_adsr *x)
     else {return 1;}
 }
 
-//loop oder sustain einstellen , neuer Input für Modus (neue Variable)
-//#define MODE_LFO 0 #define MODE_TRIGGER 1 
 void vas_adsr_next_stage(vas_adsr *x, int mode)
 {
   switch(mode) {
@@ -250,7 +240,6 @@ void vas_adsr_set_Silent_time(vas_adsr *x, float st, float sus_t)
     if(st>0 && st!=x->silent_time){x->silent_time = st;}
     if(sus_t>0 && sus_t!=x->sustain_time){x->sustain_time = sus_t;}
 }
-
 
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr){
     if(qa>0){x->att_q = qa;}

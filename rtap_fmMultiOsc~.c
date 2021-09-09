@@ -1,11 +1,11 @@
 /**
- * @file rtap_fmMultiOsc_pd.c
- * @author Thomas Resch <br>
+ * @file rtap_fmMultiOsc~.c
+ * @author Alexander and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
- * University of Applied Sciences Nordwestschweiz (FHNW), Music-Academy, Research and Development <br>
- * A gain object for pure data <br>
+ * Real Time Audio Programming in C, SS 2021<br>
+ * Main object for pure data <br>
  * <br>
- * @brief A Pure Data gain object for adjusting the volume<br>
+ * @brief A Pure Data object that bindes ADSR and Oscialitor together<br>
  * <br>
  * rtap_fmMultiOsc~ allows for adjusting the level<br>
  * of any incoming audio signal. <br>
@@ -379,6 +379,13 @@ void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float 
             *out++ = currentValue * x->master_amp;
         }
 }
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets the clipping level parameter. <br>
+ * @param x A pointer the rtap_fmMultiOsc_tilde object <br>
+ * @param makeUpLevel Sets the makeUpLevel parameter <br>
+ */
 
 void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
 {

@@ -1,12 +1,11 @@
 /**
  * @file vas_osc.h
- * @author C.Jaedicke, A.Monciero, P.Schuhladen, F.Müller <br>
- * An interpolated delay <br>
+ * @author Based on C.Jaedicke, A.Monciero, P.Schuhladen, F.Müller <br>
+ * Editet for rtap_fmMultiOsc~ by Alexander Wessel and Gideon Krumbach<br>
  * <br>
- * @brief Audio Object for adding delay to the input<br>
+ * @brief Audio Object for adding an oscillator<br>
  * <br>
- * vas_osc allows for delaying<br>
- * any incoming audio signal. <br>
+ * vas_osc allows for an oscillator to rtap_fmMultiOsc <br>
  * <br>
  */
 
@@ -22,8 +21,6 @@
 #define MODE_MOD_WITH_INPUT 0 
 #define MODE_CARRIER_NO_INPUT 1
 #define MODE_SUM_WITH_IN 2
-
-//#define SAMPLING_FREQUENCY 44100
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,11 +100,17 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mod
  * Delays exceeding the buffer size are handeled by setting the delay to zero. <br>
  */
 void vas_osc_set_frequency_factor(vas_osc *x,float master_frequency, float frequency_factor);
+
 void vas_osc_set_master_frequency(vas_osc *x, float frequency_factor);
+
 void vas_osc_setAmp(vas_osc *x, float amp_factor);
+
 void vas_osc_updateADSR(vas_osc *x, float a, float d, float s , float r);
+
 float vas_osc_calc_stepSize_Att(int tableSize, float attVal, float sumVal);
+
 float vas_osc_calc_stepSize_Dec(int tableSize, float decVal, float sumVal, float susVal);
+
 float vas_osc_calc_stepSize_Rel(int tableSize, float relVal, float sumVal, float susVal);
     
 #ifdef __cplusplus
