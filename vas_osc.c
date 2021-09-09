@@ -37,7 +37,6 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
     
     while(i--)
     {
-        
         int intIndex = floor(x->currentIndex);
         currentValue = (1-(x->amp))*(*in)+x->lookupTable[intIndex]*x->amp;
 
@@ -63,14 +62,10 @@ void vas_osc_process(vas_osc *x, float *in, float *out, int vectorSize, int mode
 	    default: printf("fehler"); break;
         }
 
-        x->adsrIndex++;
         *out++ = currentValue;
 
         if(x->currentIndex >= x->tableSize)
          x->currentIndex -= x->tableSize;
-
-        if(x->adsrIndex >= x->tableSizeADSR)
-         x->adsrIndex -= x->tableSizeADSR;
     }
 }
 

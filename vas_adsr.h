@@ -46,7 +46,7 @@ extern "C" {
  * @var vas_adsr::tableSize The parameter for the tablesize of vas_adsr object<br>
  * @var vas_adsr::*lookupTable_attack The pointer to lookupTable_attack  <br>
  * @var vas_adsr::*lookupTable_decay The pointer to lookupTable_decay<br>
- * @var vas_adsr::*lookupTable_release The pointer to ookupTable_attack  <br>
+ * @var vas_adsr::*lookupTable_release The pointer to lookupTable_attack  <br>
  * @var vas_adsr::currentIndex The parameter for current Index from tablesize <br>
  * @var vas_adsr::att_t The parameter value for adjusting the attack duration <br>
  * @var vas_adsr::dec_t The parameter value for adjusting the decay duration<br>
@@ -94,6 +94,7 @@ typedef struct vas_adsr
 /**
  * @related vas_adsr
  * @brief Creates a new adsr object<br>
+ * @param tablesize of adsr object <br>
  * The function sets the adsr parameter of the adsr class <br>
  * @return a pointer to the newly created adsr object <br>
  */

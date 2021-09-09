@@ -1,11 +1,11 @@
 /**
  * @file vas_osc.h
  * @author Based on C.Jaedicke, A.Monciero, P.Schuhladen, F.Müller <br>
- * Editet for rtap_fmMultiOsc~ by Alexander Wessel and Gideon Krumbach<br>
+ * Edit for rtap_fmMultiOsc~ by Alexander Wessel and Gideon Krumbach<br>
  * <br>
  * @brief Audio Object for adding an oscillator<br>
  * <br>
- * vas_osc allows for an oscillator to rtap_fmMultiOsc <br>
+ * vas_osc allows to add an oscillator to rtap_fmMultiOsc <br>
  * <br>
  */
 
@@ -26,93 +26,86 @@
 extern "C" {
 #endif
 
-    
+
 /**
  * @struct vas_osc
- * @brief A structure for a delay object <br>
- * @var vas_osc::buffer The buffer we save the incoming signal in <br>
- * @var vas_osc::delay_in_samples The parameter value for adjusting the <br>
- * delay of the incoming signal
- * @var vas_osc::buffer_size The size of the delay buffer <br>
- * @var vas_osc::circular_pointer Circular pointer to the delay buffer <br>
- * @var vas_osc::delay_sample The current sample from the delay buffer <br>
+ * @brief A structure for vas_osc object <br>
+ * @var vas_osc::tablesize of vas_osc object <br>
+ * @var vas_osc::currentIndex current Index from tablesize <br>
+ * @var vas_osc::frequency frequency of osc <br>
+ * @var vas_osc::amp amplitude of osc <br>
+ * @var vas_osc::*lookupTable the pointer to lookupTable <br>
+ * @var vas_osc::frequency_factor frequency factor of osc <br>
  */
-typedef struct vas_osc_adsr
-{
-    float att;
-    float dec;
-    float sus;
-    float rel;
-} vas_osc_adsr;
-
 typedef struct vas_osc
 {
     int tableSize;
-    int tableSizeADSR;
     float currentIndex;
-    float adsrIndex;
     float frequency;
     float amp;
     float *lookupTable;
-    float *lookupTableADSR;
     float frequency_factor;
-
-    vas_osc_adsr adsr;
 
 } vas_osc;
 
 /**
  * @related vas_osc
- * @brief Creates a new delay object<br>
- * The function sets the buffer size and delay parameter of <br>
- * the delay class
- * @return a pointer to the newly created vas_osc object <br>
+ * @brief Creates a new osc object<br>
+ * The function sets the osc parameter of the osc class <br>
+ * @param tableSize tablesize of osc object <br>
+ * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * @return a pointer to the newly created osc object <br>
  */
 vas_osc *vas_osc_new(int tableSize, float master_frequency);
 
 /**
  * @related vas_osc
- * @brief Frees a delay object<br>
- * @param x My delay object <br>
+ * @brief Frees a osc object<br>
+ * @param x My osc object <br>
  * The function frees the allocated memory<br>
- * of a delay object
+ * of a osc object
  */
 void vas_osc_free(vas_osc *x);
 
 /**
  * @related vas_osc
- * @brief Performs the delay in realtime. <br>
- * @param x My delay object <br>
+ * @brief Performs the osc in realtime. <br>
+ * @param x My osc object <br>
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param vector_size The size of the i/o vectors <br>
- * The function vas_osc_perform delays any <br>
- * incoming signal and copies the result to the output vector <br>
+ * The function vas_osc_process processes a oscillator depending on OSC Mode.  <br>
  */
 void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mode);
 
 /**
  * @related vas_osc
- * @brief Sets the delay time in samples with floating point precision. <br>
- * @param x My delay object <br>
- * @param _delay_in_samples The delay in samples <br>
- * Sets the delay time in samples with floating point precision. <br>
- * Delays exceeding the buffer size are handeled by setting the delay to zero. <br>
+ * @brief Sets frequency factor of oscillator. <br>
+ * @param x My osc object <br>
+ * @param frequency_factor frequency factor of osc<br>
+ * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * Sets frequency factor of oscillator. <br>
  */
 void vas_osc_set_frequency_factor(vas_osc *x,float master_frequency, float frequency_factor);
 
+/**
+ * @related vas_osc
+ * @brief Sets frequency of osc depending on master frequency. <br>
+ * @param x My osc object <br>
+ * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * Sets frequency of osc depending on master frequency. <br>
+ */
 void vas_osc_set_master_frequency(vas_osc *x, float frequency_factor);
 
+/**
+ * @related vas_osc
+ * @brief Sets amp of oscillator. <br>
+ * @param x My osc object <br>
+ * @param amp_factor amp_factor of oscillator<br>
+ * Sets frequency of oscillato depending on amp factor. <br>
+ */
 void vas_osc_setAmp(vas_osc *x, float amp_factor);
-
-void vas_osc_updateADSR(vas_osc *x, float a, float d, float s , float r);
-
-float vas_osc_calc_stepSize_Att(int tableSize, float attVal, float sumVal);
-
-float vas_osc_calc_stepSize_Dec(int tableSize, float decVal, float sumVal, float susVal);
-
-float vas_osc_calc_stepSize_Rel(int tableSize, float relVal, float sumVal, float susVal);
-    
+  
 #ifdef __cplusplus
 }
 #endif
