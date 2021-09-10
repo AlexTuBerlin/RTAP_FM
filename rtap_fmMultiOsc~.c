@@ -249,7 +249,13 @@ void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
     }
 }
 
-
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Updates the lookuptables of oscillator. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param id id of the oscillator<br>
+ * Updates the lookuptables of oscillator. <br>
+ */
 void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
 {
     switch ((int)id){
@@ -276,7 +282,14 @@ void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
     }
 }
 
-
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Updates lookUptable from pd array. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param name name of array<br>
+ * @param id id of oscillator<br>
+ * Updates lookUptable from pd array. <br>
+ */
 void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *name, float id)
 {
     int length = 0;
@@ -285,7 +298,15 @@ void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *na
 
 }
 
-
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets frequency factor of oscillator. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param id id of oscillator<br>
+ * @param frequency_factor frequency factor of osc<br>
+ * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * Sets frequency factor of oscillator. <br>
+ */
 void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, float frequency_factor)
 {
     switch ((int)id){
@@ -300,7 +321,13 @@ void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, f
     }
 }
 
-
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Updates current master frequency <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param master_frequency master frequency of rtap_fmMultiOsc_tilde object<br>
+ * Updates current master frequency . <br>
+ */
 void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, float master_frequency)
 {
     x->master_frequency=master_frequency;
@@ -309,7 +336,6 @@ void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, fl
     vas_osc_set_master_frequency(x->osc3,x-> master_frequency);
     vas_osc_set_master_frequency(x->osc4,x-> master_frequency);
 }
-
 
 /**
  * @related rtap_fmMultiOsc_tilde
