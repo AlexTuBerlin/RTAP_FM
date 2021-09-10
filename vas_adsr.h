@@ -105,7 +105,7 @@ vas_adsr *vas_adsr_new(int tableSize);
  * @brief Frees a adsr object<br>
  * @param x My adsr object <br>
  * The function frees the allocated memory<br>
- * of a adsr object
+ * of a adsr object.
  */
 void vas_adsr_free(vas_adsr *x);
 

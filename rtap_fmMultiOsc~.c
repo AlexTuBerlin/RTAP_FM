@@ -1,14 +1,13 @@
 /**
  * @file rtap_fmMultiOsc~.c
- * @author Alexander and Gideon Krumbach <br>
+ * @author Alexander Wessel and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
  * Real Time Audio Programming in C, SS 2021<br>
  * Main object for pure data <br>
  * <br>
  * @brief A Pure Data object that bindes ADSR and oscillator together<br>
  * <br>
- * rtap_fmMultiOsc~ allows for adjusting the level<br>
- * of any incoming audio signal. <br>
+ * rtap_fmMultiOsc~ allows for adjusting the four oscillators and ADSRs.
  * <br>
  */
 
@@ -41,11 +40,28 @@ static t_class *rtap_fmMultiOsc_tilde_class;
  * @var rtap_fmMultiOsc_tilde::x_obj Necessary for every signal object in Pure Data <br>
  * @var rtap_fmMultiOsc_tilde::f Also necessary for signal objects, float dummy dataspace <br>
  * for converting a float to signal if no signal is connected (CLASS_MAINSIGNALIN) <br>
- * @var rtap_fmMultiOsc_tilde::gain The gain object for the actual signal processing <br>
- * @var rtap_fmMultiOsc_tilde::x_out A signal outlet for the adjusted signal
- * level of the incoming signal
+ * @var rtap_fmMultiOsc_tilde::*osc1 Pointer to oscillator 1<br>
+ * @var rtap_fmMultiOsc_tilde::osc1_active active/not active Toggle for oscillator 1<br>
+ * @var rtap_fmMultiOsc_tilde::*osc2 Pointer to oscillator 2<br>
+ * @var rtap_fmMultiOsc_tilde::osc2_active active/not active Toggle for oscillator 2<br>
+ * @var rtap_fmMultiOsc_tilde::*osc3 Pointer to oscillator 3<br>
+ * @var rtap_fmMultiOsc_tilde::osc3_active active/not active Toggle for oscillator 3<br>
+ * @var rtap_fmMultiOsc_tilde::*osc4 Pointer to oscillator 4<br>
+ * @var rtap_fmMultiOsc_tilde::osc4_active active/not active Toggle for oscillator 4<br>
+ * @var rtap_fmMultiOsc_tilde::*adrs1 Pointer to ADSR 1<br>
+ * @var rtap_fmMultiOsc_tilde::adrs1_active active/not active Toggle for ADSR 1<br>
+ * @var rtap_fmMultiOsc_tilde::*adrs2 Pointer to ADSR 2<br>
+ * @var rtap_fmMultiOsc_tilde::adrs2_active active/not active Toggle for ADSR 2<br>
+ * @var rtap_fmMultiOsc_tilde::*adrs3 Pointer to ADSR 3<br>
+ * @var rtap_fmMultiOsc_tilde::adrs3_active active/not active Toggle for ADSR 3<br>
+ * @var rtap_fmMultiOsc_tilde::*adrs4 Pointer to ADSR 4<br>
+ * @var rtap_fmMultiOsc_tilde::adrs4_active active/not active Toggle for ADSR 4<br>
+ * @var rtap_fmMultiOsc_tilde::master_frequency Master frequency of fmMulitOsc<br>
+ * @var rtap_fmMultiOsc_tilde::master_amp  Master amp of fmMulitOsc <br>
+ * @var rtap_fmMultiOsc_tilde::current_algorithm current used Algorithm <br>
+ * @var rtap_fmMultiOsc_tilde::*table Necessary for every signal object in Pure Data <br>
+ * @var rtap_fmMultiOsc_tilde::*out A signal outlet for the adjusted signal <br>
  */
-
 typedef struct rtap_fmMultiOsc_tilde
 {
     t_object  x_obj;
@@ -80,13 +96,12 @@ typedef struct rtap_fmMultiOsc_tilde
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Calculates the volume adjusted output vector<br>
+ * @brief preforms choosen algorithm<br>
  * @param w A pointer to the object, input and output vectors. <br>
  * For more information please refer to the Pure Data Docs <br>
  * The function calls the rtap_fmMultiOsc_perform method. <br>
  * @return A pointer to the signal chain right behind the rtap_fmMultiOsc_tilde object. <br>
  */
-
 t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
 {
     rtap_fmMultiOsc_tilde *x = (rtap_fmMultiOsc_tilde *)(w[1]);
@@ -108,7 +123,6 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
  * @param sp A pointer the input and output vectors <br>
  * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
  */
-
 void rtap_fmMultiOsc_tilde_dsp(rtap_fmMultiOsc_tilde *x, t_signal **sp)
 {
     dsp_add(rtap_fmMultiOsc_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
@@ -120,7 +134,6 @@ void rtap_fmMultiOsc_tilde_dsp(rtap_fmMultiOsc_tilde *x, t_signal **sp)
  * @param x A pointer the rtap_fmMultiOsc_tilde object <br>
  * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
  */
-
 void rtap_fmMultiOsc_tilde_free(rtap_fmMultiOsc_tilde *x)
 {
     outlet_free(x->out);
@@ -142,315 +155,6 @@ void rtap_fmMultiOsc_tilde_free(rtap_fmMultiOsc_tilde *x)
  * @param f Sets the initial gain value. <br>
  * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
  */
-
-void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array, int *length)
-{
-    t_garray *a;
-    if (!(a = (t_garray *)pd_findbyclass(arrayname, garray_class)))
-    {
-        if (*arrayname->s_name) pd_error(x, "vas_osc~: %s: no such array",
-            arrayname->s_name);
-        *array = 0;
-    }
-    else if (!garray_getfloatwords(a, length, array))
-    {
-        pd_error(x, "%s: bad template for rtap_fmMultiOsc~", arrayname->s_name);
-        *array = 0;
-    }
-    else
-    {
-        post("Reading IRs from array %s", arrayname->s_name);
-    }
-}
-
-void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
-{
-        switch ((int)x->current_algorithm){
-            case ALG_1 :
-                rtap_fmMultiOsc_tilde_alg1(x,in,out,n);
-                break;
-            case ALG_2 : 
-                rtap_fmMultiOsc_tilde_alg2(x,in,out,n);
-                break;
-             case ALG_3 : 
-                rtap_fmMultiOsc_tilde_alg3(x,in,out,n);
-                break;
-            case ALG_4 :
-                rtap_fmMultiOsc_tilde_alg4(x,in,out,n);
-                break;  
-    }
-}
-
-void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
-{
-    switch ((int)id){
-        case OSC1_ID :
-            for (int i=0;i<44100; i++)
-            {
-                x->osc1->lookupTable[i] = x->table[i].w_float;
-            }
-        case OSC2_ID :
-             for (int i=0;i<44100; i++)
-            {
-                x->osc2->lookupTable[i] = x->table[i].w_float;
-            }
-        case OSC3_ID :
-             for (int i=0;i<44100; i++)
-            {
-                x->osc3->lookupTable[i] = x->table[i].w_float;
-            }
-        case OSC4_ID :
-             for (int i=0;i<44100; i++)
-            {
-                x->osc4->lookupTable[i] = x->table[i].w_float;
-            }    
-    }
-}
-
-void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *name, float id)
-{
-    int length = 0;
-    rtap_getArray(x, name, &x->table, &length);
-    rtap_write2FloatArray_osc(x,id);
-
-}
-
-void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, float frequency_factor)
-{
-    switch ((int)id){
-        case OSC1_ID :
-            vas_osc_set_frequency_factor(x->osc1,x->master_frequency,frequency_factor);
-        case OSC2_ID :
-            vas_osc_set_frequency_factor(x->osc2,x->master_frequency,frequency_factor);
-        case OSC3_ID :
-            vas_osc_set_frequency_factor(x->osc3,x->master_frequency,frequency_factor);
-        case OSC4_ID :
-           vas_osc_set_frequency_factor(x->osc4,x->master_frequency,frequency_factor);
-    }
-}
-
-void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, float master_frequency)
-{
-    x->master_frequency=master_frequency;
-    vas_osc_set_master_frequency(x->osc1,x-> master_frequency);
-    vas_osc_set_master_frequency(x->osc2,x-> master_frequency);
-    vas_osc_set_master_frequency(x->osc3,x-> master_frequency);
-    vas_osc_set_master_frequency(x->osc4,x-> master_frequency);
-}
-
-void rtap_fmMultiOsc_tilde_osc_setAmp(rtap_fmMultiOsc_tilde *x, float id, float amp_factor)
-{
-    switch ((int)id){
-        case OSC1_ID :
-            vas_osc_setAmp(x->osc1, amp_factor);
-        case OSC2_ID :
-            vas_osc_setAmp(x->osc2, amp_factor);
-        case OSC3_ID :
-            vas_osc_setAmp(x->osc3, amp_factor);
-        case OSC4_ID :
-            vas_osc_setAmp(x->osc4, amp_factor);
-    }
-}
-
-void rtap_fmMultiOsc_tilde_osc_set_Master_Amp(rtap_fmMultiOsc_tilde *x, float master_amp)
-{
-    x->master_amp=master_amp;
-}
-
-void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, float s, float r, float id)
-{
-    switch ((int)id){
-        case ADSR1_ID :
-            vas_adsr_setADSR_values(x->adsr1, a,d,s,r);
-        case ADSR2_ID :
-            vas_adsr_setADSR_values(x->adsr2, a,d,s,r);
-        case ADSR3_ID :
-            vas_adsr_setADSR_values(x->adsr3, a,d,s,r);
-        case ADSR4_ID :
-            vas_adsr_setADSR_values(x->adsr4, a,d,s,r);    
-    }
-}
-
-void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st,float sus_t, float id)
-{
-    switch ((int)id){
-        case ADSR1_ID :
-            vas_adsr_set_Silent_time(x->adsr1,st,sus_t);
-        case ADSR2_ID :
-            vas_adsr_set_Silent_time(x->adsr2,st,sus_t);
-        case ADSR3_ID :
-            vas_adsr_set_Silent_time(x->adsr3,st,sus_t);
-        case ADSR4_ID :
-            vas_adsr_set_Silent_time(x->adsr4,st,sus_t);
-    }
-}
-
-void rtap_fmMultiOsc_tilde_setADSR_Q(rtap_fmMultiOsc_tilde *x, float a, float d, float r, float id)
-{
-    switch ((int)id){
-        case ADSR1_ID :
-            vas_adsr_setQ(x->adsr1,a,d,r);
-        case ADSR2_ID :
-            vas_adsr_setQ(x->adsr2,a,d,r);
-        case ADSR3_ID :
-            vas_adsr_setQ(x->adsr3,a,d,r);
-        case ADSR4_ID :
-            vas_adsr_setQ(x->adsr4,a,d,r);
-    }
-}
-
-void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
-{
-    switch ((int)id){
-        case OSC1_ID : 
-            x->osc1_active = abs(x->osc1_active - 1);
-            break;
-        case OSC2_ID : 
-            x->osc2_active = abs(x->osc2_active - 1);
-            break;
-        case OSC3_ID : 
-            x->osc3_active = abs(x->osc3_active - 1);
-            break;
-        case OSC4_ID : 
-            x->osc4_active = abs(x->osc4_active - 1);
-            break;
-        case ADSR1_ID : 
-            x->adsr1_active = abs(x->adsr1_active - 1);
-            break;
-        case ADSR2_ID : 
-            x->adsr2_active = abs(x->adsr2_active - 1);
-            break;
-        case ADSR3_ID : 
-            x->adsr3_active = abs(x->adsr3_active - 1);
-            break;
-        case ADSR4_ID : 
-            x->adsr4_active = abs(x->adsr4_active - 1);
-            break;
-    }
-}
-
-void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, float velocity)
-{
-    rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(x,frequency);
-    vas_adsr_noteOn(x->adsr1, velocity);
-    vas_adsr_noteOn(x->adsr2, velocity);
-    vas_adsr_noteOn(x->adsr3, velocity);
-    vas_adsr_noteOn(x->adsr4, velocity);
-}
-
-void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
-{   
-    vas_adsr_noteOff(x->adsr1);  
-    vas_adsr_noteOff(x->adsr2);  
-    vas_adsr_noteOff(x->adsr3);  
-    vas_adsr_noteOff(x->adsr4);  
-}
-
-void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
-{
-    switch ((int)id){
-        case ADSR1_ID : 
-            vas_adsr_modeswitch(x->adsr1, mode);
-            break;
-        case ADSR2_ID : 
-            vas_adsr_modeswitch(x->adsr2, mode);
-            break;
-        case ADSR3_ID : 
-            vas_adsr_modeswitch(x->adsr3, mode);
-            break;
-        case ADSR4_ID : 
-            vas_adsr_modeswitch(x->adsr4, mode);
-            break;
-    }
-}
-
-void rtap_fmMultiOsc_tilde_algorithmode(rtap_fmMultiOsc_tilde *x, float alg_mode)
-{
-    x->current_algorithm = alg_mode;
-}
-
-void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float *out, int vectorSize)
-{
-    int i = vectorSize;
-    float currentValue= 0.0F;
-        while(i--)
-        {
-            currentValue=*in++;
-            *out++ = currentValue * x->master_amp;
-        }
-}
-
-
-void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
-{
-    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
-    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
-    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_MOD_WITH_INPUT);}
-    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
-    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
-    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
-    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
-    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
-}
-
-void rtap_fmMultiOsc_tilde_alg2(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
-{
-    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
-    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
-    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
-    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
-    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
-    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
-    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
-    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
-}
-
-void rtap_fmMultiOsc_tilde_alg3(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
-{
-    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
-    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
-    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
-    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
-    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
-    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
-    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_MOD_WITH_INPUT);}
-    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
-}
-
-void rtap_fmMultiOsc_tilde_alg4(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
-{
-    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
-    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
-    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
-    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
-    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
-    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
-    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_SUM_WITH_IN);}
-    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
-}
-
-void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
-{
-     switch ((int)id){
-        case OSC1_ID : 
-            vas_osc_free(x->osc1);
-            x->osc1 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
-            break;
-        case OSC2_ID : 
-            vas_osc_free(x->osc2);
-            x->osc2 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
-            break;
-        case OSC3_ID : 
-            vas_osc_free(x->osc3);
-            x->osc3 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
-            break;
-        case OSC4_ID : 
-            vas_osc_free(x->osc4);
-            x->osc4 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
-            break;
-     }
-}
-
 void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 {
     rtap_fmMultiOsc_tilde *x = (rtap_fmMultiOsc_tilde *)pd_new(rtap_fmMultiOsc_tilde_class);
@@ -489,7 +193,474 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
     return (void *)x;
 }
 
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @author Thomas Resch 
+ * @brief Gets array from pd.<br>
+ * @param x rtap_fmMultiOsc_tilde object. <br>
+ * @param *arrayname name of read array. <br>
+ * @param **array array value. <br>
+ * @param *length length of array. <br>
+ */
+void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array, int *length)
+{
+    t_garray *a;
+    if (!(a = (t_garray *)pd_findbyclass(arrayname, garray_class)))
+    {
+        if (*arrayname->s_name) pd_error(x, "vas_osc~: %s: no such array",
+            arrayname->s_name);
+        *array = 0;
+    }
+    else if (!garray_getfloatwords(a, length, array))
+    {
+        pd_error(x, "%s: bad template for rtap_fmMultiOsc~", arrayname->s_name);
+        *array = 0;
+    }
+    else
+    {
+        post("Reading IRs from array %s", arrayname->s_name);
+    }
+}
 
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Performs current algorithm. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param n The size of the i/o vectors <br>
+ * Performs current chosen algorithm. <br>
+ */
+void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+        switch ((int)x->current_algorithm){
+            case ALG_1 :
+                rtap_fmMultiOsc_tilde_alg1(x,in,out,n);
+                break;
+            case ALG_2 : 
+                rtap_fmMultiOsc_tilde_alg2(x,in,out,n);
+                break;
+             case ALG_3 : 
+                rtap_fmMultiOsc_tilde_alg3(x,in,out,n);
+                break;
+            case ALG_4 :
+                rtap_fmMultiOsc_tilde_alg4(x,in,out,n);
+                break;  
+    }
+}
+
+
+void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
+{
+    switch ((int)id){
+        case OSC1_ID :
+            for (int i=0;i<44100; i++)
+            {
+                x->osc1->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC2_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc2->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC3_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc3->lookupTable[i] = x->table[i].w_float;
+            }
+        case OSC4_ID :
+             for (int i=0;i<44100; i++)
+            {
+                x->osc4->lookupTable[i] = x->table[i].w_float;
+            }    
+    }
+}
+
+
+void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *name, float id)
+{
+    int length = 0;
+    rtap_getArray(x, name, &x->table, &length);
+    rtap_write2FloatArray_osc(x,id);
+
+}
+
+
+void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, float frequency_factor)
+{
+    switch ((int)id){
+        case OSC1_ID :
+            vas_osc_set_frequency_factor(x->osc1,x->master_frequency,frequency_factor);
+        case OSC2_ID :
+            vas_osc_set_frequency_factor(x->osc2,x->master_frequency,frequency_factor);
+        case OSC3_ID :
+            vas_osc_set_frequency_factor(x->osc3,x->master_frequency,frequency_factor);
+        case OSC4_ID :
+           vas_osc_set_frequency_factor(x->osc4,x->master_frequency,frequency_factor);
+    }
+}
+
+
+void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, float master_frequency)
+{
+    x->master_frequency=master_frequency;
+    vas_osc_set_master_frequency(x->osc1,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc2,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc3,x-> master_frequency);
+    vas_osc_set_master_frequency(x->osc4,x-> master_frequency);
+}
+
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets amp of oscillator. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param id id of oscillator<br>
+ * @param amp_factor amp factor of oscillator<br>
+ * Sets amp of oscillator depending on amp factor. <br>
+ */
+void rtap_fmMultiOsc_tilde_osc_setAmp(rtap_fmMultiOsc_tilde *x, float id, float amp_factor)
+{
+    switch ((int)id){
+        case OSC1_ID :
+            vas_osc_setAmp(x->osc1, amp_factor);
+        case OSC2_ID :
+            vas_osc_setAmp(x->osc2, amp_factor);
+        case OSC3_ID :
+            vas_osc_setAmp(x->osc3, amp_factor);
+        case OSC4_ID :
+            vas_osc_setAmp(x->osc4, amp_factor);
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Updates current master amp. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param master_amp  master amp of rtap_fmMultiOsc_tilde object<br>
+ * Updates current master amp. <br>
+ */
+void rtap_fmMultiOsc_tilde_osc_set_Master_Amp(rtap_fmMultiOsc_tilde *x, float master_amp)
+{
+    x->master_amp=master_amp;
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets ADSR Parameters. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param a parameter for attack time<br>
+ * @param d parameter for decay time<br>
+ * @param s parameter for sustian volume<br>
+ * @param r parameter for release time<br>
+ * @param id id of adsr<br>
+ * Sets ADSR parameters of adsr object. <br>
+ */
+void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, float s, float r, float id)
+{
+    switch ((int)id){
+        case ADSR1_ID :
+            vas_adsr_setADSR_values(x->adsr1, a,d,s,r);
+        case ADSR2_ID :
+            vas_adsr_setADSR_values(x->adsr2, a,d,s,r);
+        case ADSR3_ID :
+            vas_adsr_setADSR_values(x->adsr3, a,d,s,r);
+        case ADSR4_ID :
+            vas_adsr_setADSR_values(x->adsr4, a,d,s,r);    
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets the silent time and sustain time in LOOP Mode. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param st the parameter for relative silent time <br>
+ * @param sus_time the parameter relative sustain time <br>
+ * @param id id of adsr<br>
+ Sets the silent time and sustain time in LOOP Mode.
+ */
+void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st,float sus_t, float id)
+{
+    switch ((int)id){
+        case ADSR1_ID :
+            vas_adsr_set_Silent_time(x->adsr1,st,sus_t);
+        case ADSR2_ID :
+            vas_adsr_set_Silent_time(x->adsr2,st,sus_t);
+        case ADSR3_ID :
+            vas_adsr_set_Silent_time(x->adsr3,st,sus_t);
+        case ADSR4_ID :
+            vas_adsr_set_Silent_time(x->adsr4,st,sus_t);
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Sets Q-ADR Parameters. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param a parameter for Q-attack<br>
+ * @param d parameter for Q-decay<br>
+ * @param r parameter for Q-release<br>
+ * @param id id of adsr<br>
+ * Sets Q-ADR parameters of adsr object. <br>
+ */
+void rtap_fmMultiOsc_tilde_setADSR_Q(rtap_fmMultiOsc_tilde *x, float a, float d, float r, float id)
+{
+    switch ((int)id){
+        case ADSR1_ID :
+            vas_adsr_setQ(x->adsr1,a,d,r);
+        case ADSR2_ID :
+            vas_adsr_setQ(x->adsr2,a,d,r);
+        case ADSR3_ID :
+            vas_adsr_setQ(x->adsr3,a,d,r);
+        case ADSR4_ID :
+            vas_adsr_setQ(x->adsr4,a,d,r);
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Toggles the active oscillators and ADSRs. <br>
+ * @param x My rtap_fmMultiOsc_tilde object <br>
+ * @param id the oscillator or adsr id<br>
+ * Toggles the active oscillators and ADSRs. <br>
+ */
+void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
+{
+    switch ((int)id){
+        case OSC1_ID : 
+            x->osc1_active = abs(x->osc1_active - 1);
+            break;
+        case OSC2_ID : 
+            x->osc2_active = abs(x->osc2_active - 1);
+            break;
+        case OSC3_ID : 
+            x->osc3_active = abs(x->osc3_active - 1);
+            break;
+        case OSC4_ID : 
+            x->osc4_active = abs(x->osc4_active - 1);
+            break;
+        case ADSR1_ID : 
+            x->adsr1_active = abs(x->adsr1_active - 1);
+            break;
+        case ADSR2_ID : 
+            x->adsr2_active = abs(x->adsr2_active - 1);
+            break;
+        case ADSR3_ID : 
+            x->adsr3_active = abs(x->adsr3_active - 1);
+            break;
+        case ADSR4_ID : 
+            x->adsr4_active = abs(x->adsr4_active - 1);
+            break;
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Triggers a note_on in both TRIGGER and LOOP Mode and reset master frequency. <br>
+ * @param x My adsr object <br>
+ * @param frequency of noteon<br>
+ * @param velocity sound level in Terms of MIDI  <br>
+ * Triggers a note on in both ADSR Modes and reset master frequency. <br>
+ */
+void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, float velocity)
+{
+    rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(x,frequency);
+    vas_adsr_noteOn(x->adsr1, velocity);
+    vas_adsr_noteOn(x->adsr2, velocity);
+    vas_adsr_noteOn(x->adsr3, velocity);
+    vas_adsr_noteOn(x->adsr4, velocity);
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Triggers a note_off in both TRIGGER and LOOP Mode. <br>
+ * @param x My adsr object <br>
+ * Triggers a note off in both ADSR Modes. <br>
+ */
+void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
+{   
+    vas_adsr_noteOff(x->adsr1);  
+    vas_adsr_noteOff(x->adsr2);  
+    vas_adsr_noteOff(x->adsr3);  
+    vas_adsr_noteOff(x->adsr4);  
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Switches between TRIGGER and LOOP Mode of ADSR. <br>
+ * @param x My adsr object <br>
+ * @param mode the parameter that adjusts the ADSR mode<br>
+ * @param id ID of ADSR<br>
+ * Switches between TRIGGER and LOOP Mode of ADSR object. <br>
+ */
+void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
+{
+    switch ((int)id){
+        case ADSR1_ID : 
+            vas_adsr_modeswitch(x->adsr1, mode);
+            break;
+        case ADSR2_ID : 
+            vas_adsr_modeswitch(x->adsr2, mode);
+            break;
+        case ADSR3_ID : 
+            vas_adsr_modeswitch(x->adsr3, mode);
+            break;
+        case ADSR4_ID : 
+            vas_adsr_modeswitch(x->adsr4, mode);
+            break;
+    }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Updates the current algorithm. <br>
+ * @param x My adsr object <br>
+ * @param alg_mode current algorithm id<br>
+ * Updates the current algorithm. <br>
+ */
+void rtap_fmMultiOsc_tilde_algorithmode(rtap_fmMultiOsc_tilde *x, float alg_mode)
+{
+    x->current_algorithm = alg_mode;
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Reset waveform of oscillator. <br>
+ * @param x My adsr object <br>
+ * @param id the oscillator id<br>
+ * Reset waveform of oscillator. <br>
+ */
+void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
+{
+     switch ((int)id){
+        case OSC1_ID : 
+            vas_osc_free(x->osc1);
+            x->osc1 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC2_ID : 
+            vas_osc_free(x->osc2);
+            x->osc2 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC3_ID : 
+            vas_osc_free(x->osc3);
+            x->osc3 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+        case OSC4_ID : 
+            vas_osc_free(x->osc4);
+            x->osc4 = vas_osc_new(SAMPLING_FREQUENCY,x->master_frequency);
+            break;
+     }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Calculates current output volume. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param vectorSize The size of the i/o vectors <br>
+ * Calculates current output volume. <br>
+ */
+void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float *out, int vectorSize)
+{
+    int i = vectorSize;
+    float currentValue= 0.0F;
+        while(i--)
+        {
+            currentValue=*in++;
+            *out++ = currentValue * x->master_amp;
+        }
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Performs algorithm 1. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param n The size of the i/o vectors <br>
+ * Performs algorithm 1. <br>
+ */
+void rtap_fmMultiOsc_tilde_alg1(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Performs algorithm 2. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param n The size of the i/o vectors <br>
+ * Performs algorithm 2. <br>
+ */
+void rtap_fmMultiOsc_tilde_alg2(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n, MODE_MOD_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Performs algorithm 3. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param n The size of the i/o vectors <br>
+ * Performs algorithm 3. <br>
+ */
+void rtap_fmMultiOsc_tilde_alg3(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_MOD_WITH_INPUT);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Performs algorithm 4. <br>
+ * @param x My adsr object <br>
+ * @param in The input vector <br>
+ * @param out The output vector <br>
+ * @param n The size of the i/o vectors <br>
+ * Performs algorithm 4. <br>
+ */
+void rtap_fmMultiOsc_tilde_alg4(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+{
+    if(x->osc1_active) {vas_osc_process(x->osc1, in, out, n, MODE_CARRIER_NO_INPUT);}
+    if(x->adsr1_active && x->osc1_active){vas_adsr_process(x->adsr1, in, out, n);} 
+    if(x->osc2_active){vas_osc_process(x->osc2, in, out, n, MODE_SUM_WITH_IN);}
+    if(x->adsr2_active && x->osc2_active) {vas_adsr_process(x->adsr2, in, out, n); }
+    if(x->osc3_active) {vas_osc_process(x->osc3, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr3_active && x->osc3_active) {vas_adsr_process(x->adsr3, in, out, n);}
+    if(x->osc4_active) {vas_osc_process(x->osc4, in, out, n,  MODE_SUM_WITH_IN);}
+    if(x->adsr4_active && x->osc4_active) {vas_adsr_process(x->adsr4, in, out, n);}
+}
+
+/**
+ * @related rtap_fmMultiOsc_tilde
+ * @brief Setup of rtap_fmMultiOsc_tilde <br>
+ * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
+ */
 void rtap_fmMultiOsc_tilde_setup(void)
 {
     rtap_fmMultiOsc_tilde_class = class_new(gensym("rtap_fmMultiOsc~"),
