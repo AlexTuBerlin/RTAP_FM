@@ -42,52 +42,32 @@ extern "C" {
    
 /**
  * @struct vas_adsr
- * @brief A structure for vas_adsr object <br>
- * @var vas_adsr::tableSize The parameter for the tablesize of vas_adsr object<br>
- * @var vas_adsr::*lookupTable_attack The pointer to lookupTable_attack  <br>
- * @var vas_adsr::*lookupTable_decay The pointer to lookupTable_decay<br>
- * @var vas_adsr::*lookupTable_release The pointer to lookupTable_attack  <br>
- * @var vas_adsr::currentIndex The parameter for current Index from tablesize <br>
- * @var vas_adsr::att_t The parameter value for adjusting the attack duration <br>
- * @var vas_adsr::dec_t The parameter value for adjusting the decay duration<br>
- * @var vas_adsr::sus_v The parameter value for adjusting the sustain volume<br>
- * @var vas_adsr::rel_t The parameter value for adjusting the realease duration <br>
- * @var vas_adsr::silent_time The parameter value for adjusting the silent_time between Loops <br>  
- * @var vas_adsr::sustain_time The parameter value for adjusting the sustain_time between Loops <br>
- * @var vas_adsr::att_q The parameter value for adjusting the attack q-factor <br>
- * @var vas_adsr::dec_q The parameter value for adjusting the decay q-factor <br>
- * @var vas_adsr::rel_q The parameter value for adjusting the release q-factor <br>  
- * @var vas_adsr::resultvolume The parameter value for adjusting the volume <br>
- * @var vas_adsr::currentStage The parameter value for adjusting the current Stage <br>
- * @var vas_adsr::currentMode The parameter value for switching between LOOP(LFO) <br>
- * and TRIGGER mode
- * @var vas_adsr::is_note_on The parameter value for switching between note_on<br>
- * and note_off  
+ * @brief A structure for vas_adsr object. <br>
  */
 typedef struct vas_adsr
 {
-    int tableSize;
-    float *lookupTable_attack;
-    float *lookupTable_decay;
-    float *lookupTable_release;
-    float currentIndex;
+    int tableSize;                  /**< The parameter for the tablesize of vas_adsr object */
+    float *lookupTable_attack;      /**< The pointer to lookupTable_attack  */
+    float *lookupTable_decay;       /**< The pointer to lookupTable_decay*/
+    float *lookupTable_release;     /**< The pointer to lookupTable_release*/
+    float currentIndex;             /**< The parameter for current Index from tablesize*/
 
-    float att_t;
-    float dec_t;
-    float sus_v;
-    float rel_t;
+    float att_t;                    /**< The parameter value for adjusting the attack duration */
+    float dec_t;                    /**< The parameter value for adjusting the decay duration */
+    float sus_v;                    /**< The parameter value for adjusting the sustain volume */
+    float rel_t;                    /**< The parameter value for adjusting the release duration */
 
-    float silent_time;
-    float sustain_time;
+    float silent_time;              /**< The parameter value for adjusting the silent time between Loops*/
+    float sustain_time;             /**< The parameter value for adjusting the sustain time between Loops*/
 
-    float att_q;
-    float dec_q;
-    float rel_q;
-    float resultvolume;
+    float att_q;                    /**< The parameter value for adjusting the attack q-factor*/
+    float dec_q;                    /**< The parameter value for adjusting the decay q-factor*/
+    float rel_q;                    /**< The parameter value for adjusting the release q-factor */
+    float resultvolume;             /**< The parameter value for adjusting the volume */
 
-    int currentStage;
-    int currentMode;
-    int is_note_on;
+    int currentStage;               /**< The parameter value for adjusting the current Stage*/
+    int currentMode;                /**< The parameter value for switching between LOOP(LFO)*/
+    int is_note_on;                 /**< The parameter value for switching between note_on and note_off */
 
 } vas_adsr;
 

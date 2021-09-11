@@ -1,3 +1,8 @@
+/**
+ * @file vas_adsr.c
+ * @author Alexander Wessels - responsible for Architecture, OSC-Basic and ADSR Curves Calculation
+ * <br>  and Trigger Mode
+ */
 #include "vas_adsr.h"
 #include <math.h>
 

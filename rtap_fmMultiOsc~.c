@@ -1,21 +1,18 @@
 /**
- * @file rtap_fmMultiOsc~.c
- * @author Alexander Wessels - responsible for Architecture, OSC-Basic and ADSR Curves Calculation
- * <br>  and Trigger Mode
- * and Gideon Krumbach - responsible for Integration, Mode-Switching,
- * <br> Support of Multiple Osc (volume and frequency factors), ADSR Instances and LOOP(LFO) Mode
+ * @file rtap_fmMultiOsc.c
+ * @author Alexander Wessels - responsible for Architecture, OSC-Basic and ADSR Curves Calculation and Trigger Mode. <br>
+ * Gideon Krumbach - responsible for Integration, Mode-Switching Support of Multiple Osc (volume and frequency factors),<br>
+ * ADSR Instances and LOOP(LFO) Mode. <br>
  * Documentation and PD-Patch by Alexander Wessels and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
  * Real Time Audio Programming in C, SS 2021<br>
- * Main object for pure data <br>
  * <br>
- * @brief A Pure Data object that consists of serveral ADSR Object and Oscillator Objects, and chains them
- * <br> together according to selected algorithm<br>
+ * @brief A Pure Data object that consists of serveral ADSR Object and Oscillator Objects, and chains them<br>
+ * together according to selected algorithm. It allows for adjusting the four oscillators and ADSRs and <br>
+ * is the Main object for pure data. 
  * <br>
- * rtap_fmMultiOsc~ allows for adjusting the four oscillators and ADSRs.
- * <br>
+ * @note filename changed to rtap_fmMultiOsc.c from rtap_fmMultiOsc~.c for Doxygen export.
  */
-
 #include "m_pd.h"
 #include "vas_osc.h"
 #include "vas_adsr.h"
@@ -41,62 +38,38 @@ static t_class *rtap_fmMultiOsc_tilde_class;
 
 /**
  * @struct rtap_fmMultiOsc_tilde
- * @brief The Pure Data struct of the rtap_fmMultiOsc~ object. <br>
- * @var rtap_fmMultiOsc_tilde::x_obj Necessary for every signal object in Pure Data <br>
- * @var rtap_fmMultiOsc_tilde::f Also necessary for signal objects, float dummy dataspace <br>
- * for converting a float to signal if no signal is connected (CLASS_MAINSIGNALIN) <br>
- * @var rtap_fmMultiOsc_tilde::*osc1 Pointer to oscillator 1<br>
- * @var rtap_fmMultiOsc_tilde::osc1_active active/not active Toggle for oscillator 1<br>
- * @var rtap_fmMultiOsc_tilde::*osc2 Pointer to oscillator 2<br>
- * @var rtap_fmMultiOsc_tilde::osc2_active active/not active Toggle for oscillator 2<br>
- * @var rtap_fmMultiOsc_tilde::*osc3 Pointer to oscillator 3<br>
- * @var rtap_fmMultiOsc_tilde::osc3_active active/not active Toggle for oscillator 3<br>
- * @var rtap_fmMultiOsc_tilde::*osc4 Pointer to oscillator 4<br>
- * @var rtap_fmMultiOsc_tilde::osc4_active active/not active Toggle for oscillator 4<br>
- * @var rtap_fmMultiOsc_tilde::*adrs1 Pointer to ADSR 1<br>
- * @var rtap_fmMultiOsc_tilde::adrs1_active active/not active Toggle for ADSR 1<br>
- * @var rtap_fmMultiOsc_tilde::*adrs2 Pointer to ADSR 2<br>
- * @var rtap_fmMultiOsc_tilde::adrs2_active active/not active Toggle for ADSR 2<br>
- * @var rtap_fmMultiOsc_tilde::*adrs3 Pointer to ADSR 3<br>
- * @var rtap_fmMultiOsc_tilde::adrs3_active active/not active Toggle for ADSR 3<br>
- * @var rtap_fmMultiOsc_tilde::*adrs4 Pointer to ADSR 4<br>
- * @var rtap_fmMultiOsc_tilde::adrs4_active active/not active Toggle for ADSR 4<br>
- * @var rtap_fmMultiOsc_tilde::master_frequency Master frequency of fmMulitOsc<br>
- * @var rtap_fmMultiOsc_tilde::master_amp  Master amp of fmMulitOsc <br>
- * @var rtap_fmMultiOsc_tilde::current_algorithm current used Algorithm <br>
- * @var rtap_fmMultiOsc_tilde::*table Necessary for every signal objects in Pure Data <br>
- * @var rtap_fmMultiOsc_tilde::*out A signal outlet for the adjusted signal <br>
+ * @brief The Pure Data struct of the rtap_fmMultiOsc_tilde object. 
  */
 typedef struct rtap_fmMultiOsc_tilde
 {
-    t_object  x_obj;
-    t_sample f;
+    t_object  x_obj;        /**< Necessary for every signal object in Pure Data*/
+    t_sample f;             /**< Also necessary for signal objects, float dummy dataspace <br>* for converting a float to signal if no signal is connected (CLASS_MAINSIGNALIN) <br>*/
 
-    vas_osc *osc1;
-    int osc1_active;
-    vas_osc *osc2;
-    int osc2_active;
-    vas_osc *osc3;
-    int osc3_active;
-    vas_osc *osc4;
-    int osc4_active;
+    vas_osc *osc1;          /**< Pointer to oscillator 1*/
+    int osc1_active;        /**< active/not active Toggle for oscillator 1*/
+    vas_osc *osc2;          /**< Pointer to oscillator 2*/
+    int osc2_active;        /**< active/not active Toggle for oscillator 2*/
+    vas_osc *osc3;          /**< Pointer to oscillator 3*/
+    int osc3_active;        /**< active/not active Toggle for oscillator 3*/
+    vas_osc *osc4;          /**< Pointer to oscillator 4*/
+    int osc4_active;        /**< active/not active Toggle for oscillator 4*/
     
-    vas_adsr *adsr1;
-    int adsr1_active;
-    vas_adsr *adsr2;
-    int adsr2_active;
-    vas_adsr *adsr3;
-    int adsr3_active;
-    vas_adsr *adsr4;
-    int adsr4_active;
+    vas_adsr *adsr1;        /**< Pointer to ADSR 1*/
+    int adsr1_active;       /**< active/not active Toggle for ADSR 1*/
+    vas_adsr *adsr2;        /**< Pointer to ADSR 2*/
+    int adsr2_active;       /**< active/not active Toggle for ADSR 2*/
+    vas_adsr *adsr3;        /**< Pointer to ADSR 3*/
+    int adsr3_active;       /**< active/not active Toggle for ADSR 3*/
+    vas_adsr *adsr4;        /**< Pointer to ADSR 4*/
+    int adsr4_active;       /**< active/not active Toggle for ADSR 4*/
 
-    float master_frequency;
-    float master_amp;
-    int current_algorithm;
+    float master_frequency; /**< Master frequency of fmMulitOsc*/     
+    float master_amp;       /**< Master amp of fmMulitOsc*/
+    int current_algorithm;  /**< current used Algorithm*/
 
-    t_word *table;
+    t_word *table;          /**< Necessary for every signal object in Pure Data*/
     
-    t_outlet *out;
+    t_outlet *out;          /**< A signal outlet for the adjusted signal*/
 } rtap_fmMultiOsc_tilde;
 
 /**

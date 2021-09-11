@@ -3,9 +3,9 @@
  * @author Based on C.Jaedicke, A.Monciero, P.Schuhladen, F.Müller <br>
  * Edit for rtap_fmMultiOsc~ by Alexander Wessel and Gideon Krumbach<br>
  * <br>
- * @brief Audio Object for adding an oscillator<br>
+ * @brief Audio Object for adding an oscillator.<br>
  * <br>
- * vas_osc allows to add an oscillator to rtap_fmMultiOsc <br>
+ * vas_osc allows to add an oscillator to rtap_fmMultiOsc.
  * <br>
  */
 
@@ -29,22 +29,16 @@ extern "C" {
 
 /**
  * @struct vas_osc
- * @brief A structure for vas_osc object <br>
- * @var vas_osc::tablesize of vas_osc object <br>
- * @var vas_osc::currentIndex current Index from tablesize <br>
- * @var vas_osc::frequency frequency of osc <br>
- * @var vas_osc::amp amplitude of osc <br>
- * @var vas_osc::*lookupTable the pointer to the lookupTable <br>
- * @var vas_osc::frequency_factor frequency factor of osc <br>
+ * @brief A structure for vas_osc object. <br>
  */
 typedef struct vas_osc
 {
-    int tableSize;
-    float currentIndex;
-    float frequency;
-    float amp;
-    float *lookupTable;
-    float frequency_factor;
+    int tableSize;          /**< tablesize of vas_osc object*/
+    float currentIndex;     /**< current Index from tablesize*/
+    float frequency;        /**< frequency of osc*/
+    float amp;              /**< amplitude of osc*/
+    float *lookupTable;     /**< the pointer to the lookupTable*/
+    float frequency_factor; /**< frequency factor of osc*/
 
 } vas_osc;
 
