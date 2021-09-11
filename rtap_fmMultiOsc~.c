@@ -1,6 +1,10 @@
 /**
  * @file rtap_fmMultiOsc~.c
- * @author Alexander Wessel and Gideon Krumbach <br>
+ * @author Alexander Wessels - responsible for Architecture, OSC-Basic and ADSR Curves Calculation
+ * <br>  and Trigger Mode
+ * and Gideon Krumbach - responisble for Integration, Mode-Switching,
+ * <br> Support of Multiple Osc (volume and frequency factors), ADSR Instances and Loop Mode
+ * Documentation and PD-Patch by Alexander Wessels and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
  * Real Time Audio Programming in C, SS 2021<br>
  * Main object for pure data <br>
