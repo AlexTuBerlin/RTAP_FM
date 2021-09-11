@@ -116,7 +116,7 @@ void vas_adsr_free(vas_adsr *x);
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param vector_size The size of the i/o vectors <br>
- * The function vas_adsr_process appiels the adsr of an <br>
+ * The function vas_adsr_process applies the adsr of an <br>
  * incoming signal and copies the result to the output vector <br>
  */
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size);
