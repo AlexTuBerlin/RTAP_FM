@@ -1,11 +1,12 @@
-/**
+/**
  * @file rtap_fmMultiOsc~.c
  * @author Alexander Wessel and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
  * Real Time Audio Programming in C, SS 2021<br>
  * Main object for pure data <br>
  * <br>
- * @brief A Pure Data object that bindes ADSR and oscillator together<br>
+ * @brief A Pure Data object that consists of serveral ADSR Object and Oscillator Objects, and chains them
+ * <br> together according to selected algorithm<br>
  * <br>
  * rtap_fmMultiOsc~ allows for adjusting the four oscillators and ADSRs.
  * <br>
@@ -403,7 +404,7 @@ void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, f
  * @param st the parameter for relative silent time <br>
  * @param sus_time the parameter relative sustain time <br>
  * @param id id of adsr<br>
- Sets the silent time and sustain time in LOOP Mode.
+ * Sets the silent time and sustain time in LOOP Mode.
  */
 void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st,float sus_t, float id)
 {
@@ -517,7 +518,7 @@ void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
  * @param x My adsr object <br>
  * @param mode the parameter that adjusts the ADSR mode<br>
  * @param id ID of ADSR<br>
- * Switches between TRIGGER and LOOP Mode of ADSR object. <br>
+ * Switches between TRIGGER and LOOP Mode (LFO) of ADSR object. <br>
  */
 void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
 {
@@ -554,7 +555,7 @@ void rtap_fmMultiOsc_tilde_algorithmode(rtap_fmMultiOsc_tilde *x, float alg_mode
  * @brief Reset waveform of oscillator. <br>
  * @param x My adsr object <br>
  * @param id the oscillator id<br>
- * Reset waveform of oscillator. <br>
+ * Reset waveform of oscillator to sine. <br>
  */
 void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
 {
@@ -585,7 +586,7 @@ void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param vectorSize The size of the i/o vectors <br>
- * Calculates current output volume. <br>
+ * Calculates current output volume with the master_amp variable. <br>
  */
 void rtap_fmMultiOsc_tilde_gainstage(rtap_fmMultiOsc_tilde *x, float *in, float *out, int vectorSize)
 {
@@ -684,7 +685,7 @@ void rtap_fmMultiOsc_tilde_alg4(rtap_fmMultiOsc_tilde *x, float *in, float *out,
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Setup of rtap_fmMultiOsc_tilde <br>
+ * @brief Initializes Properties of rtap_fmMultiOsc_tilde <br>
  * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
  */
 void rtap_fmMultiOsc_tilde_setup(void)

@@ -1,4 +1,4 @@
-#N canvas 2639 179 1875 1007 12;
+#N canvas -36 39 1920 996 12;
 #X obj 819 968 dac~;
 #X obj 81 121 vu 40 120 empty empty -1 -8 0 10 -66577 -1 1 0;
 #X obj 769 941 env~ 128;
@@ -5998,40 +5998,40 @@
 #X msg 771 462 I/O 14;
 #X msg 7 831 noteoff, f 36;
 #X obj 560 136 hsl 128 15 0.01 20 1 0 empty empty empty -2 -8 0 10
--262144 -1 -1 0 1;
+-262144 -1 -1 7695 1;
 #X text 222 133 OSC 1;
 #X text 578 112 Freq Factor;
 #X floatatom 519 134 5 0 0 0 - - -;
 #X obj 344 135 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X floatatom 304 133 5 0 0 0 - - -;
 #X text 360 109 Amp Factor;
 #X obj 560 166 hsl 128 15 0.01 20 1 0 empty empty empty -2 -8 0 10
--262144 -1 -1 0 1;
+-262144 -1 -1 7695 1;
 #X floatatom 520 164 5 0 0 0 - - -;
 #X obj 345 165 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X floatatom 305 163 5 0 0 0 - - -;
 #X obj 561 196 hsl 128 15 0.01 20 1 0 empty empty empty -2 -8 0 10
--262144 -1 -1 0 1;
+-262144 -1 -1 7695 1;
 #X floatatom 520 195 5 0 0 0 - - -;
 #X obj 346 195 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X floatatom 306 193 5 0 0 0 - - -;
 #X obj 559 223 hsl 128 15 0.01 20 1 0 empty empty empty -2 -8 0 10
--262144 -1 -1 0 1;
+-262144 -1 -1 7695 1;
 #X floatatom 518 222 5 0 0 0 - - -;
 #X obj 344 222 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X floatatom 304 220 5 0 0 0 - - -;
 #X text 222 192 OSC 3;
 #X text 222 225 OSC 4;
 #X msg 771 702 osc_master_freq \$1;
 #X obj 171 113 vsl 30 128 20 12000 1 0 empty empty empty 0 -9 0 10
--262144 -1 -1 0 1;
+-262144 -1 -1 6137 1;
 #X msg 772 679 osc_master_amp \$1;
 #X obj 47 114 vsl 30 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X obj 977 128 vradio 30 1 0 4 empty empty empty 0 -8 0 10 -262144
 -1 -1 0;
 #X text 728 135 ADSR 1;
@@ -11988,8 +11988,8 @@
 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714
 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714;
 #X coords 0 1 44100 -1 200 140 1;
-#X restore 1196 745 graph;
-#X msg 1196 712 osc_table array2 2;
+#X restore 1190 697 graph;
+#X msg 1190 664 osc_table array2 2;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array array3 44100 float 3;
 #A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -13114,7 +13114,7 @@
 -0.625337 -0.625297 -0.625256 -0.625216 -0.625175 -0.625135 -0.625094
 -0.625054 -0.625013 -0.624973 -0.624932 -0.624892 -0.624851 -0.624811
 -0.62477 -0.62473 -0.624689 -0.624649 -0.624609 -0.624568 -0.624528
--0.624487 -0.624447 -0.624406 -0.624366 -0.624325 ;
+-0.624487 -0.624447 -0.624406 -0.624366 -0.624325;
 #A 8000 -0.624285 -0.624244 -0.624204 -0.624163 -0.624123 -0.624082
 -0.624042 -0.624001 -0.623961 -0.623921 -0.62388 -0.62384 -0.623799
 -0.623759 -0.623718 -0.623678 -0.623637 -0.623597 -0.623556 -0.623516
@@ -23834,8 +23834,8 @@
 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714
 -1.15714 -1.15714 -1.15714 -1.15714 -1.15714;
 #X coords 0 1 44100 -1 200 140 1 0 0;
-#X restore 1416 754 graph;
-#X msg 1416 719 osc_table array4 4;
+#X restore 1410 706 graph;
+#X msg 1410 671 osc_table array4 4;
 #X msg 141 860 noteon 82.41 127, f 7;
 #X msg 207 860 noteon 87.31 127, f 8;
 #X msg 290 860 noteon 98 127, f 5;
@@ -23914,20 +23914,15 @@
 #X msg 505 860 noteon 880 127, f 5;
 #X msg 775 638 silent_time \$2 \$3 \$4;
 #X obj 1243 362 pack \$1 \$2 \$3 \$4;
-#X msg 1186 461 reset_waveform 1;
-#X msg 1410 453 reset_waveform 3;
-#X msg 1190 679 reset_waveform 2;
-#X msg 1415 689 reset_waveform 4;
-#X floatatom 127 541 5 11 12 0 - - -;
-#X obj 128 401 vradio 30 1 0 4 empty empty empty 0 -8 0 10 -262144
+#X msg 771 765 algorithm_mode \$1;
+#X floatatom 117 565 5 0 0 0 - - -;
+#X obj 117 546 + 1;
+#X obj 117 346 vradio 50 1 0 4 empty empty empty 0 -8 0 10 -262144
 -1 -1 0;
-#X text 119 377 Select;
-#X text 81 405 ADSR 1;
-#X text 81 434 ADSR 2;
-#X text 80 463 ADSR 3;
-#X text 79 493 ADSR 4;
-#X obj 129 560 + 1;
-#X msg 218 642 algorithm_mode \$1;
+#X text 32 363 Algorithm 1;
+#X text 32 414 Algorithm 2;
+#X text 33 459 Algorithm 3;
+#X text 31 508 Algorithm 4;
 #X connect 2 0 3 0;
 #X connect 3 0 1 0;
 #X connect 5 0 2 0;
@@ -24121,11 +24116,7 @@
 #X connect 180 0 5 0;
 #X connect 181 0 180 0;
 #X connect 182 0 5 0;
-#X connect 183 0 5 0;
-#X connect 184 0 5 0;
-#X connect 185 0 5 0;
-#X connect 187 0 193 0;
-#X connect 193 0 186 0;
-#X connect 193 0 194 0;
-#X connect 194 0 5 0;
+#X connect 183 0 182 0;
+#X connect 184 0 183 0;
+#X connect 185 0 184 0;
 #X coords 0 0 100 100 0 0 0;

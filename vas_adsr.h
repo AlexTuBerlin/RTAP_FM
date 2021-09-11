@@ -148,7 +148,7 @@ void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r);
  * @param qa parameter for Q-attack<br>
  * @param qd parameter for Q-decay<br>
  * @param qr parameter for Q-release<br>
- * Sets Q-ADR parameters of adsr object. <br>
+ * Sets Q-ADR parameters of adsr object. Which sreselbles the steepness of given courve <br>
  */
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 
@@ -221,7 +221,7 @@ float vas_adsr_get_current_value(vas_adsr *x);
  * @param x current index value <br>
  * @param q the parameter Q<br>
  * @return new value for lookuptable <br>
-Calculates new slope up for Q-attack.
+ * Calculates new slope up for Q-attack.
  */
 float vas_adsr_func_slope_up(float x,float q);
 
@@ -231,7 +231,7 @@ float vas_adsr_func_slope_up(float x,float q);
  * @param x current index value <br>
  * @param q the parameter Q<br>
  * @return new value for lookuptable <br>
-Calculates new slope down for Q-decay and Q-release.
+ * Calculates new slope down for Q-decay and Q-release.
  */
 float vas_adsr_func_slope_down(float x,float q);
 
