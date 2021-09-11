@@ -1,9 +1,9 @@
-/**
+/**
  * @file rtap_fmMultiOsc~.c
  * @author Alexander Wessels - responsible for Architecture, OSC-Basic and ADSR Curves Calculation
  * <br>  and Trigger Mode
- * and Gideon Krumbach - responisble for Integration, Mode-Switching,
- * <br> Support of Multiple Osc (volume and frequency factors), ADSR Instances and Loop Mode
+ * and Gideon Krumbach - responsible for Integration, Mode-Switching,
+ * <br> Support of Multiple Osc (volume and frequency factors), ADSR Instances and LOOP(LFO) Mode
  * Documentation and PD-Patch by Alexander Wessels and Gideon Krumbach <br>
  * Audiocommunication Group, Technical University Berlin <br>
  * Real Time Audio Programming in C, SS 2021<br>
@@ -64,7 +64,7 @@ static t_class *rtap_fmMultiOsc_tilde_class;
  * @var rtap_fmMultiOsc_tilde::master_frequency Master frequency of fmMulitOsc<br>
  * @var rtap_fmMultiOsc_tilde::master_amp  Master amp of fmMulitOsc <br>
  * @var rtap_fmMultiOsc_tilde::current_algorithm current used Algorithm <br>
- * @var rtap_fmMultiOsc_tilde::*table Necessary for every signal object in Pure Data <br>
+ * @var rtap_fmMultiOsc_tilde::*table Necessary for every signal objects in Pure Data <br>
  * @var rtap_fmMultiOsc_tilde::*out A signal outlet for the adjusted signal <br>
  */
 typedef struct rtap_fmMultiOsc_tilde
@@ -101,7 +101,7 @@ typedef struct rtap_fmMultiOsc_tilde
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief preforms choosen algorithm<br>
+ * @brief performs choosen algorithm<br>
  * @param w A pointer to the object, input and output vectors. <br>
  * For more information please refer to the Pure Data Docs <br>
  * The function calls the rtap_fmMultiOsc_perform method. <br>
@@ -114,7 +114,7 @@ t_int *rtap_fmMultiOsc_tilde_perform(t_int *w)
     t_sample  *out =  (t_sample *)(w[3]);
     int n =  (int)(w[4]);
     
-    rtap_root_algoritm(x,in,out,n);
+    rtap_fmMultiOsc_tilde_root_algoritm(x,in,out,n);
     rtap_fmMultiOsc_tilde_gainstage(x,in,out,n);
 
     /* return a pointer to the dataspace for the next dsp-object */
@@ -135,7 +135,7 @@ void rtap_fmMultiOsc_tilde_dsp(rtap_fmMultiOsc_tilde *x, t_signal **sp)
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Frees our object. <br>
+ * @brief Frees dataspace of our object. <br>
  * @param x A pointer the rtap_fmMultiOsc_tilde object <br>
  * For more information please refer to the <a href = "https://github.com/pure-data/externals-howto" > Pure Data Docs </a> <br>
  */
@@ -201,13 +201,13 @@ void *rtap_fmMultiOsc_tilde_new(t_floatarg f)
 /**
  * @related rtap_fmMultiOsc_tilde
  * @author Thomas Resch 
- * @brief Gets array from pd.<br>
- * @param x rtap_fmMultiOsc_tilde object. <br>
+ * @brief Gets an waveform array from pd.<br>
+ * @param x A pointer the rtap_fmMultiOsc_tilde object. <br>
  * @param *arrayname name of read array. <br>
  * @param **array array value. <br>
  * @param *length length of array. <br>
  */
-void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array, int *length)
+void rtap_fmMultiOsc_tilde_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array, int *length)
 {
     t_garray *a;
     if (!(a = (t_garray *)pd_findbyclass(arrayname, garray_class)))
@@ -230,13 +230,13 @@ void rtap_getArray(rtap_fmMultiOsc_tilde *x, t_symbol *arrayname, t_word **array
 /**
  * @related rtap_fmMultiOsc_tilde
  * @brief Performs current algorithm. <br>
- * @param x My adsr object <br>
+ * @param x A pointer the rtap_fmMultiOsc_tilde object. <br>
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param n The size of the i/o vectors <br>
  * Performs current chosen algorithm. <br>
  */
-void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
+void rtap_fmMultiOsc_tilde_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
 {
         switch ((int)x->current_algorithm){
             case ALG_1 :
@@ -261,7 +261,7 @@ void rtap_root_algoritm(rtap_fmMultiOsc_tilde *x, float *in, float *out, int n)
  * @param id id of the oscillator<br>
  * Updates the lookuptables of oscillator. <br>
  */
-void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
+void rtap_fmMultiOsc_tilde_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
 {
     switch ((int)id){
         case OSC1_ID :
@@ -298,8 +298,8 @@ void rtap_write2FloatArray_osc(rtap_fmMultiOsc_tilde *x, float id)
 void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *name, float id)
 {
     int length = 0;
-    rtap_getArray(x, name, &x->table, &length);
-    rtap_write2FloatArray_osc(x,id);
+    rtap_fmMultiOsc_tilde_getArray(x, name, &x->table, &length);
+    rtap_fmMultiOsc_tilde_write2FloatArray_osc(x,id);
 
 }
 
@@ -309,7 +309,7 @@ void rtap_fmMultiOsc_tilde_setExternTable(rtap_fmMultiOsc_tilde *x, t_symbol *na
  * @param x My rtap_fmMultiOsc_tilde object <br>
  * @param id id of oscillator<br>
  * @param frequency_factor frequency factor of osc<br>
- * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * @param master_frequency master frequency of rtap_fmMultiOsc object<br>
  * Sets frequency factor of oscillator. <br>
  */
 void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, float frequency_factor)
@@ -331,7 +331,7 @@ void rtap_fmMultiOsc_tilde_osc_setFrequency(rtap_fmMultiOsc_tilde *x,float id, f
  * @brief Updates current master frequency <br>
  * @param x My rtap_fmMultiOsc_tilde object <br>
  * @param master_frequency master frequency of rtap_fmMultiOsc_tilde object<br>
- * Updates current master frequency . <br>
+ * Updates current master frequency. <br>
  */
 void rtap_fmMultiOsc_tilde_osc_set_Master_Frequency(rtap_fmMultiOsc_tilde *x, float master_frequency)
 {
@@ -382,7 +382,7 @@ void rtap_fmMultiOsc_tilde_osc_set_Master_Amp(rtap_fmMultiOsc_tilde *x, float ma
  * @param x My rtap_fmMultiOsc_tilde object <br>
  * @param a parameter for attack time<br>
  * @param d parameter for decay time<br>
- * @param s parameter for sustian volume<br>
+ * @param s parameter for sustain volume<br>
  * @param r parameter for release time<br>
  * @param id id of adsr<br>
  * Sets ADSR parameters of adsr object. <br>
@@ -403,12 +403,12 @@ void rtap_fmMultiOsc_tilde_setADSR(rtap_fmMultiOsc_tilde *x, float a, float d, f
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Sets the silent time and sustain time in LOOP Mode. <br>
+ * @brief Sets the silent time and sustain time in LOOP(LFO) Mode. <br>
  * @param x My rtap_fmMultiOsc_tilde object <br>
  * @param st the parameter for relative silent time <br>
  * @param sus_time the parameter relative sustain time <br>
  * @param id id of adsr<br>
- * Sets the silent time and sustain time in LOOP Mode.
+ * Sets the silent time and sustain time in LOOP(LFO) Mode.
  */
 void rtap_fmMultiOsc_tilde_set_Silent_time(rtap_fmMultiOsc_tilde *x, float st,float sus_t, float id)
 {
@@ -487,7 +487,7 @@ void rtap_fmMultiOsc_tilde_toggle_active(rtap_fmMultiOsc_tilde *x, float id)
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Triggers a note_on in both TRIGGER and LOOP Mode and reset master frequency. <br>
+ * @brief Triggers a note_on in both TRIGGER and LOOP(LFO) Mode and reset master frequency. <br>
  * @param x My adsr object <br>
  * @param frequency of noteon<br>
  * @param velocity sound level in Terms of MIDI  <br>
@@ -504,7 +504,7 @@ void rtap_fmMultiOsc_tilde_noteOn(rtap_fmMultiOsc_tilde *x, float frequency, flo
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Triggers a note_off in both TRIGGER and LOOP Mode. <br>
+ * @brief Triggers a note_off in both TRIGGER and LOOP(LFO) Mode. <br>
  * @param x My adsr object <br>
  * Triggers a note off in both ADSR Modes. <br>
  */
@@ -518,11 +518,11 @@ void rtap_fmMultiOsc_tilde_noteOff(rtap_fmMultiOsc_tilde *x)
 
 /**
  * @related rtap_fmMultiOsc_tilde
- * @brief Switches between TRIGGER and LOOP Mode of ADSR. <br>
+ * @brief Switches between TRIGGER and LOOP(LFO) Mode of ADSR. <br>
  * @param x My adsr object <br>
  * @param mode the parameter that adjusts the ADSR mode<br>
  * @param id ID of ADSR<br>
- * Switches between TRIGGER and LOOP Mode (LFO) of ADSR object. <br>
+ * Switches between TRIGGER and LOOP(LFO) Mode of ADSR object. <br>
  */
 void rtap_fmMultiOsc_tilde_ADSRmode(rtap_fmMultiOsc_tilde *x, float mode, float id)
 {
@@ -559,7 +559,7 @@ void rtap_fmMultiOsc_tilde_algorithmode(rtap_fmMultiOsc_tilde *x, float alg_mode
  * @brief Reset waveform of oscillator. <br>
  * @param x My adsr object <br>
  * @param id the oscillator id<br>
- * Reset waveform of oscillator to sine. <br>
+ * Reset waveform of oscillator to sinewave. <br>
  */
 void rtap_fmMultiOsc_tilde_reset_waveform(rtap_fmMultiOsc_tilde *x, float id)
 {

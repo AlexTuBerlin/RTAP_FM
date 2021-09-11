@@ -34,7 +34,7 @@ extern "C" {
  * @var vas_osc::currentIndex current Index from tablesize <br>
  * @var vas_osc::frequency frequency of osc <br>
  * @var vas_osc::amp amplitude of osc <br>
- * @var vas_osc::*lookupTable the pointer to lookupTable <br>
+ * @var vas_osc::*lookupTable the pointer to the lookupTable <br>
  * @var vas_osc::frequency_factor frequency factor of osc <br>
  */
 typedef struct vas_osc
@@ -53,7 +53,7 @@ typedef struct vas_osc
  * @brief Creates a new osc object<br>
  * The function sets the osc parameter of the osc class <br>
  * @param tableSize tablesize of osc object <br>
- * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * @param master_frequency master frequency of rtap_fmMultiOsc object<br>
  * @return a pointer to the newly created osc object <br>
  */
 vas_osc *vas_osc_new(int tableSize, float master_frequency);
@@ -63,7 +63,7 @@ vas_osc *vas_osc_new(int tableSize, float master_frequency);
  * @brief Frees a osc object<br>
  * @param x My osc object <br>
  * The function frees the allocated memory<br>
- * of a osc object
+ * of an osc object.
  */
 void vas_osc_free(vas_osc *x);
 
@@ -74,7 +74,7 @@ void vas_osc_free(vas_osc *x);
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param vector_size The size of the i/o vectors <br>
- * The function vas_osc_process processes a oscillator depending on OSC Mode.  <br>
+ * The function vas_osc_process processes a oscillator depending on OSC Mode. <br>
  */
 void vas_osc_process(vas_osc *x, float *in, float *out, int vector_size, int mode);
 
@@ -92,7 +92,7 @@ void vas_osc_set_frequency_factor(vas_osc *x,float master_frequency, float frequ
  * @related vas_osc
  * @brief Sets frequency of osc depending on master frequency. <br>
  * @param x My osc object <br>
- * @param master_frequency master_frequency of rtap_fmMultiOsc object<br>
+ * @param master_frequency master frequency of rtap_fmMultiOsc object<br>
  * Sets frequency of osc depending on master frequency. <br>
  */
 void vas_osc_set_master_frequency(vas_osc *x, float frequency_factor);
@@ -102,7 +102,7 @@ void vas_osc_set_master_frequency(vas_osc *x, float frequency_factor);
  * @brief Sets amp of oscillator. <br>
  * @param x My osc object <br>
  * @param amp_factor amp_factor of oscillator<br>
- * Sets frequency of oscillato depending on amp factor. <br>
+ * Sets frequency of oscillator depending on amp factor. <br>
  */
 void vas_osc_setAmp(vas_osc *x, float amp_factor);
   

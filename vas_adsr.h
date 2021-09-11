@@ -1,9 +1,9 @@
 /**
  * @file vas_adsr.h
  * @author Alexander Wessel and Gideon Krumbach<br>
- * Object for implementing ADSR and Q-ADR Manipulation <br>
+ * Object for implementing ADSR and Q-ADR Manipulation. <br>
  * <br>
- * @brief Audio Object for manipulating ADSR and Q-ADR for different oscillators <br>
+ * @brief Audio Object for manipulating ADSR and Q-ADR for different oscillators. <br>
  * <br>
  * vas_adsr allows for manipulating any binded oscillator. <br>
  * <br>
@@ -59,7 +59,7 @@ extern "C" {
  * @var vas_adsr::rel_q The parameter value for adjusting the release q-factor <br>  
  * @var vas_adsr::resultvolume The parameter value for adjusting the volume <br>
  * @var vas_adsr::currentStage The parameter value for adjusting the current Stage <br>
- * @var vas_adsr::currentMode The parameter value for switching between LOOP <br>
+ * @var vas_adsr::currentMode The parameter value for switching between LOOP(LFO) <br>
  * and TRIGGER mode
  * @var vas_adsr::is_note_on The parameter value for switching between note_on<br>
  * and note_off  
@@ -116,8 +116,8 @@ void vas_adsr_free(vas_adsr *x);
  * @param in The input vector <br>
  * @param out The output vector <br>
  * @param vector_size The size of the i/o vectors <br>
- * The function vas_adsr_process applies the adsr of an <br>
- * incoming signal and copies the result to the output vector <br>
+ * The function vas_adsr_process applies the adsr to an <br>
+ * incoming signal and copies the result to the output vector. <br>
  */
 void vas_adsr_process(vas_adsr *x, float *in, float *out, int vector_size);
 
@@ -148,43 +148,43 @@ void vas_adsr_setADSR_values(vas_adsr *x, float a, float d, float s, float r);
  * @param qa parameter for Q-attack<br>
  * @param qd parameter for Q-decay<br>
  * @param qr parameter for Q-release<br>
- * Sets Q-ADR parameters of adsr object. Which sreselbles the steepness of given courve <br>
+ * Sets Q-ADR parameters of adsr object, which resembles the steepness of given curve. <br>
  */
 void vas_adsr_setQ(vas_adsr *x, float qa, float qd, float qr);
 
 /**
  * @related vas_adsr
- * @brief Triggers a note_on in both TRIGGER and LOOP Mode. <br>
+ * @brief Triggers a note on in both TRIGGER and LOOP(LFO) Mode. <br>
  * @param x My adsr object <br>
  * @param velocity sound level in Terms of MIDI  <br>
- * Triggers a note on in both ADSR Modes. <br>
+ * Triggers a note on in both TRIGGER and LOOP(LFO) ADSR Modes. <br>
  */
 void vas_adsr_noteOn(vas_adsr *x, float velocity);
 
 /**
  * @related vas_adsr
- * @brief Triggers a note_off in both TRIGGER and LOOP Mode. <br>
+ * @brief Triggers a note_off in both TRIGGER and LOOP(LFO) Mode. <br>
  * @param x My adsr object <br>
- * Triggers a note off in both ADSR Modes. <br>
+ * Triggers a note off in both TRIGGER and LOOP(LFO) ADSR Modes. <br>
  */
 void vas_adsr_noteOff(vas_adsr *x);
 
 /**
  * @related vas_adsr
- * @brief Switches between TRIGGER and LOOP Mode of ADSR. <br>
+ * @brief Switches between TRIGGER and LOOP(LFO) Mode of ADSR. <br>
  * @param x My adsr object <br>
  * @param mode the parameter that adjusts the ADSR mode<br>
- * Switches between TRIGGER and LOOP Mode of ADSR object. <br>
+ * Switches between TRIGGER and LOOP(LFO) Mode of ADSR object. <br>
  */
 void vas_adsr_modeswitch(vas_adsr *x, float mode);
 
 /**
  * @related vas_adsr
- * @brief Sets the silent time and sustain time in LOOP Mode. <br>
+ * @brief Sets the silent time and sustain time in LOOP(LFO) Mode. <br>
  * @param x My adsr object <br>
  * @param st the parameter for relative silent time <br>
  * @param sus_time the parameter relative sustain time <br>
- Sets the silent time and sustain time in LOOP Mode.
+ Sets the silent time and sustain time in LOOP(LFO) Mode.
  */
 void vas_adsr_set_Silent_time(vas_adsr *x,float st, float sus_time);
 
@@ -208,30 +208,30 @@ void vas_adsr_next_stage(vas_adsr *x,int mode);
 
 /**
  * @related vas_adsr
- * @brief Sets current value depending on ADSR stage. <br>
+ * @brief Sets current value depending on ADSR stage and returns it. <br>
  * @param x My adsr object <br>
  * @return current value for lookuptable <br>
- * Sets current value depending on ADSR stage. <br>
+ * Sets current value depending on ADSR stage and returns it. <br>
  */
 float vas_adsr_get_current_value(vas_adsr *x);
 
 /**
  * @related vas_adsr
- * @brief Calculates new slope up. <br>
+ * @brief Calculates new slope up and returns it. <br>
  * @param x current index value <br>
  * @param q the parameter Q<br>
  * @return new value for lookuptable <br>
- * Calculates new slope up for Q-attack.
+ * Calculates new slope up for Q-attack and returns it.
  */
 float vas_adsr_func_slope_up(float x,float q);
 
 /**
  * @related vas_adsr
- * @brief Calculates new slope up. <br>
+ * @brief Calculates new slope up and returns it. <br>
  * @param x current index value <br>
  * @param q the parameter Q<br>
  * @return new value for lookuptable <br>
- * Calculates new slope down for Q-decay and Q-release.
+ * Calculates new slope down for Q-decay and Q-release and returns it.
  */
 float vas_adsr_func_slope_down(float x,float q);
 
