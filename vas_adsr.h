@@ -42,7 +42,7 @@ extern "C" {
    
 /**
  * @struct vas_adsr
- * @brief A structure for adsr object <br>
+ * @brief A structure for vas_adsr object <br>
  * @var vas_adsr::tableSize The parameter for the tablesize of vas_adsr object<br>
  * @var vas_adsr::*lookupTable_attack The pointer to lookupTable_attack  <br>
  * @var vas_adsr::*lookupTable_decay The pointer to lookupTable_decay<br>
